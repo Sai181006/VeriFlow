@@ -3,7 +3,7 @@ schema Student {
     marks: int;
 }
 
-pipeline PassedStudents from "students.csv" as Student {
+pipeline ProjectStudents from "students.csv" as Student {
     select name, marks;
     emit "selected_students.csv";
 }

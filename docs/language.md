@@ -44,7 +44,7 @@ primary       = NUMBER | STRING | "true" | "false" | IDENT | "(" expression ")" 
   offsets count Unicode characters. CRLF is one line break. The CLI accepts an
   optional UTF-8 BOM, removed before source offsets are measured.
 - Lexical errors stop scanning and report the start of the invalid token. Error
-  recovery and parser integration remain later work.
+  recovery remains later work. The Stage 2 parser consumes these tokens directly.
 
 ## Planned semantic rules
 
@@ -55,7 +55,26 @@ may not repeat. Exactly one select is followed by exactly one terminal emit.
 The pipeline's schema reference must resolve. Literal division by zero is a
 compile-time error; data-dependent zero is checked during execution.
 
-The initial projection prototype will require select followed by emit and reject
-all other statements explicitly until they are implemented. Later stages will
-define CSV conversion, path resolution, row rejection, and execution semantics
-before introducing the runtime.
+The implemented projection syntax permits a nonempty list of select/emit
+statements; semantic analysis requires exactly one select followed by exactly
+one emit. A schema must have at least one field. A source must contain exactly
+one schema followed by exactly one pipeline, with no trailing tokens. Schema
+and pipeline names must be distinct. The full expression grammar above is a
+future specification, not implemented syntax.
+
+The initial projection prototype rejects require/let/keep explicitly until
+they are implemented. Static checks resolve the schema reference and selected
+fields, reject duplicate declarations and selections, and preserve field order
+and primitive types in the symbol table. Unknown names include a likely-name
+suggestion when available. Syntax and semantic errors fail at the first error
+and retain source spans. The parser uses recursive descent rather than the
+report's proposed Lark infrastructure.
+
+## Implemented CSV projection semantics
+
+Stage 3 implements the execution contract in [prototype behavior](prototype.md).
+Input and output path strings must be nonempty and contain no NUL characters;
+these checks also run during `check`. CSV cells retain their exact text while
+every declared field is validated against its schema type. Projection processes
+all rows, preserving row order and selecting columns in source selection order.
+Invalid data aborts execution; no row rejection or filtering is implemented.

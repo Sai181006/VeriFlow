@@ -9,10 +9,10 @@ from veriflow.cli import main
 
 
 class CliTests(unittest.TestCase):
-    def run_cli(self, path):
+    def run_cli(self, path, command="tokens"):
         stdout, stderr = StringIO(), StringIO()
         with redirect_stdout(stdout), redirect_stderr(stderr):
-            status = main(["tokens", str(path)])
+            status = main([command, str(path)])
         return status, stdout.getvalue(), stderr.getvalue()
 
     def test_example_is_tokenized(self):
@@ -44,3 +44,62 @@ class CliTests(unittest.TestCase):
             self.assertEqual(status, 0)
             self.assertEqual(json.loads(stdout)[1]["span"]["start"],
                              {"offset": 8, "line": 2, "column": 1})
+
+    def test_ast_and_check_example(self):
+        path = Path(__file__).resolve().parents[1] / "examples/project_students.vfl"
+        status, stdout, stderr = self.run_cli(path, "ast")
+        self.assertEqual((status, stderr), (0, ""))
+        self.assertEqual(json.loads(stdout)["schema"]["name"]["value"], "Student")
+        status, stdout, stderr = self.run_cli(path, "check")
+        self.assertEqual((status, stderr), (0, ""))
+        self.assertEqual([s["name"] for s in json.loads(stdout)["selected"]], ["name", "marks"])
+
+    def test_syntax_and_semantic_diagnostics(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "bad.vfl"
+            path.write_text("schema Student {\nname text;\n}", encoding="utf-8")
+            status, stdout, stderr = self.run_cli(path, "ast")
+            self.assertEqual((status, stdout), (1, ""))
+            self.assertIn(":2:6: syntax error:", stderr)
+            path.write_text('schema Student { name: text; }\n'
+                            'pipeline P from "missing.csv" as Student { select nope; emit "x"; }',
+                            encoding="utf-8")
+            self.assertEqual(self.run_cli(path, "ast")[0], 0)
+            status, stdout, stderr = self.run_cli(path, "check")
+            self.assertEqual((status, stdout), (1, ""))
+            self.assertIn(":2:51: semantic error: Unknown field", stderr)
+
+    def test_run_end_to_end_from_another_directory(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            path = root / "project.vfl"
+            path.write_text('schema S { name: text; marks: int; } '
+                            'pipeline P from "students.csv" as S { select marks, name; emit "out.csv"; }')
+            (root / "students.csv").write_text('name,marks\n"Mira, S",91\n')
+            status, stdout, stderr = self.run_cli(path, "run")
+            self.assertEqual((status, stderr), (0, ""))
+            self.assertEqual(json.loads(stdout)["rows_written"], 1)
+            self.assertEqual(json.loads(stdout)["columns"], ["marks", "name"])
+            self.assertEqual((root / "out.csv").read_text(), 'marks,name\n91,"Mira, S"\n')
+            status, stdout, stderr = self.run_cli(path, "run")
+            self.assertEqual((status, stdout), (1, ""))
+            self.assertIn("runtime error: Output already exists", stderr)
+
+    def test_run_checks_before_io_and_reports_invalid_data(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            path = root / "project.vfl"
+            valid = ('schema S { marks: int; } '
+                     'pipeline P from "missing.csv" as S { select marks; emit "out.csv"; }')
+            path.write_text(valid.replace("select marks", "select typo"))
+            status, stdout, stderr = self.run_cli(path, "run")
+            self.assertEqual((status, stdout), (1, ""))
+            self.assertIn("semantic error: Unknown field", stderr)
+            self.assertFalse((root / "out.csv").exists())
+            path.write_text(valid)
+            (root / "missing.csv").write_text("marks\ninvalid\n")
+            status, stdout, stderr = self.run_cli(path, "run")
+            self.assertEqual((status, stdout), (1, ""))
+            self.assertIn("runtime error:", stderr)
+            self.assertIn("CSV line 2: field 'marks' requires int", stderr)
+            self.assertFalse((root / "out.csv").exists())

@@ -13,18 +13,29 @@ full compiler belongs to subsequent phases.
 
 Each stage ends with a code audit, tests, and a reviewable change summary.
 Pushes require explicit user approval after that evidence is available.
-No remote writes have been made for Stage 1.
+No commits or pushes have been made for these stages.
 
 ## Architectural decisions
 
 - Python 3.12+ with independent compiler components.
 - A handwritten lexer makes lexical analysis visible and needs no dependency.
-  The report proposed Lark for grammar/parser infrastructure. Stage 2 will
-  reconcile Lark integration with the independent token interface before coding.
+  The report proposed Lark for grammar/parser infrastructure. Stage 2 uses
+  recursive descent over the existing tokens for this small deterministic
+  subset, preserving a single lexical contract without third-party dependencies.
 - Keep source spans from the front end through subsequent representations.
 - No source evaluation through Python `eval` or `exec`.
 - Reserve the full planned vocabulary now; recognize only completed stages
   as available features in the CLI.
+
+Stage 2 is implemented locally: projection parsing, AST inspection, schema
+symbols, reference resolution, and static projection checks. The `ast` command
+accepts syntactically valid statements regardless of ordering; `check` applies
+the ordering and name rules. These inspection commands do not execute CSV operations.
+
+Stage 3 is implemented locally: `run` performs static checks, validates CSV
+headers and declared field types, and streams selected columns into a new output
+file. Successful output is published after all input passes validation. See
+[prototype behavior](prototype.md) and [Stage 3 audit](stage-three-audit.md).
 
 ## Deferred work
 
