@@ -149,3 +149,48 @@ class RuntimeTests(unittest.TestCase):
                 execute(self.checked, self.source)
         self.assertIn("cleanup denied", context.exception.__notes__[0])
         self.assertFalse((self.root / "output.csv").exists())
+
+    def test_require_and_keep_execute_in_source_order(self):
+        program = PROGRAM.replace(
+            'select score, name;',
+            'require age >= 0 and age <= 120 else "age out of range"; '
+            'keep where score >= 40; select score, name;')
+        checked = analyze(parse(program))
+        self.write_input(HEADER + "A,20,39,true\nB,21,40,true\nC,22,91,false\n")
+        result = execute(checked, self.source)
+        self.assertEqual((result.rows_written, result.rows_filtered), (2, 1))
+        self.assertEqual((self.root / "output.csv").read_text(),
+                         "score,name\n40,B\n91,C\n")
+
+    def test_requirement_failure_uses_message_and_publishes_nothing(self):
+        program = PROGRAM.replace('select score, name;',
+                                  'require age >= 0 else "age cannot be negative"; select score, name;')
+        self.write_input(HEADER + "A,-1,50,true\n")
+        with self.assertRaisesRegex(ExecutionError, "CSV line 2: requirement failed: age cannot be negative"):
+            execute(analyze(parse(program)), self.source)
+        self.assertFalse((self.root / "output.csv").exists())
+
+    def test_arithmetic_parentheses_boolean_and_short_circuit(self):
+        program = PROGRAM.replace(
+            'select score, name;',
+            'keep where flag == true and (age == 0 or score / age >= 2); select score, name;')
+        self.write_input(HEADER + "Zero,0,10,true\nPass,20,40,true\nNo,20,100,false\n")
+        result = execute(analyze(parse(program)), self.source)
+        self.assertEqual((result.rows_written, result.rows_filtered), (2, 1))
+        self.assertEqual((self.root / "output.csv").read_text(),
+                         "score,name\n10,Zero\n40,Pass\n")
+
+    def test_data_dependent_division_by_zero_is_runtime_error(self):
+        program = PROGRAM.replace('select score, name;',
+                                  'keep where score / age > 1; select score, name;')
+        self.write_input(HEADER + "A,0,50,true\n")
+        with self.assertRaisesRegex(ExecutionError, "CSV line 2: expression failed"):
+            execute(analyze(parse(program)), self.source)
+        self.assertFalse((self.root / "output.csv").exists())
+
+    def test_expression_arithmetic_is_exact(self):
+        program = PROGRAM.replace('select score, name;',
+                                  'keep where (score / 3) * 3 == score; select score, name;')
+        self.write_input(HEADER + "Third,1,1,true\n")
+        result = execute(analyze(parse(program)), self.source)
+        self.assertEqual((result.rows_written, result.rows_filtered), (1, 0))

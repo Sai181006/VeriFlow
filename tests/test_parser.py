@@ -1,7 +1,7 @@
 from pathlib import Path
 import unittest
 
-from veriflow.ast import Emit, Select
+from veriflow.ast import Binary, Emit, Keep, Require, Select, Unary
 from veriflow.lexer import LexError
 from veriflow.parser import ParseError, parse
 
@@ -17,7 +17,9 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(program.schema.name.value, "Student")
         self.assertEqual([(f.name.value, f.type.value) for f in program.schema.fields],
                          [("name", "text"), ("marks", "int")])
-        select, emit = program.pipeline.statements
+        require, keep, select, emit = program.pipeline.statements
+        self.assertIsInstance(require, Require)
+        self.assertIsInstance(keep, Keep)
         self.assertIsInstance(select, Select)
         self.assertIsInstance(emit, Emit)
         self.assertEqual([f.value for f in select.fields], ["name", "marks"])
@@ -46,10 +48,31 @@ class ParserTests(unittest.TestCase):
             with self.subTest(text=text), self.assertRaises(ParseError):
                 parse(text)
 
-    def test_future_statements_rejected_explicitly(self):
-        for statement in ('require true else "bad";', 'let x = 1;', 'keep where true;'):
-            with self.subTest(statement=statement), self.assertRaisesRegex(ParseError, "not supported"):
-                parse(source(statement))
+    def test_let_remains_explicitly_unsupported(self):
+        with self.assertRaisesRegex(ParseError, "not supported"):
+            parse(source('let x = 1;'))
+
+    def test_conditions_and_expression_precedence(self):
+        program = parse(source('require marks >= 0 and not false else "bad"; '
+                               'keep where marks + 2 * 3 >= 40 or false; '
+                               'select name; emit "x";'))
+        require, keep, _, _ = program.pipeline.statements
+        self.assertIsInstance(require, Require)
+        self.assertIsInstance(keep, Keep)
+        self.assertEqual(require.condition.operator, "and")
+        self.assertEqual(require.condition.left.operator, ">=")
+        self.assertIsInstance(require.condition.right, Unary)
+        self.assertEqual(keep.condition.operator, "or")
+        self.assertIsInstance(keep.condition.left, Binary)
+        self.assertEqual(keep.condition.left.left.operator, "+")
+        self.assertEqual(keep.condition.left.left.right.operator, "*")
+
+    def test_malformed_conditions(self):
+        for statement in ('require marks >= else "bad";', 'require true "bad";',
+                          'keep marks > 1;', 'keep where (marks > 1;',
+                          'keep where marks > 1);'):
+            with self.subTest(statement=statement), self.assertRaises(ParseError):
+                parse(source(statement + ' select name; emit "x";'))
 
     def test_error_position_and_eof(self):
         with self.assertRaises(ParseError) as context:

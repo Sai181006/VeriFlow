@@ -11,9 +11,9 @@ full compiler belongs to subsequent phases.
 | 2 | Parser, source-positioned AST, schema and projection semantics | Valid/invalid syntax, unknown/duplicate fields, statement ordering | Add parser and schema checks |
 | 3 | CSV projection execution and prototype documentation | Quoted CSV, headers, conversions, error cases, output checks | Add CSV projection prototype |
 
-Each stage ends with a code audit, tests, and a reviewable change summary.
-Pushes require explicit user approval after that evidence is available.
-No commits or pushes have been made for these stages.
+Each stage ended with a code audit, tests, and a reviewable change summary. The
+original Phase One prototype is committed and pushed on `main`. Later enhancements
+remain local until they pass the same audit and receive explicit push approval.
 
 ## Architectural decisions
 
@@ -32,13 +32,15 @@ symbols, reference resolution, and static projection checks. The `ast` command
 accepts syntactically valid statements regardless of ordering; `check` applies
 the ordering and name rules. These inspection commands do not execute CSV operations.
 
-Stage 3 is implemented locally: `run` performs static checks, validates CSV
+Stage 3: `run` performs static checks, validates CSV
 headers and declared field types, and streams selected columns into a new output
 file. Successful output is published after all input passes validation. See
 [prototype behavior](prototype.md) and [Stage 3 audit](stage-three-audit.md).
 
 ## Deferred work
 
-Expressions, require/let/keep, typed IR, optimization, stack bytecode, VM,
-lineage, and recovery are later compiler slices. Stage 3 is a narrow prototype
-and must not be described as the completed compiler.
+The prototype has since been extended with typed expressions, `require`, `keep
+where`, caret diagnostics, and an `explain` plan containing postfix expression
+IR. Derived fields through `let`, optimization, complete pipeline bytecode, VM,
+lineage, and recovery remain later compiler slices. This must not be described
+as the completed compiler.

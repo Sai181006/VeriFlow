@@ -11,7 +11,10 @@ schema Student {
     marks: int;
 }
 
-pipeline ProjectStudents from "students.csv" as Student {
+pipeline PassingStudents from "students.csv" as Student {
+    require marks >= 0 and marks <= 100
+        else "marks must be between 0 and 100";
+    keep where marks >= 40;
     select name, marks;
     emit "selected_students.csv";
 }
@@ -19,19 +22,22 @@ pipeline ProjectStudents from "students.csv" as Student {
 
 ## Phase 1
 
-Phase 1 provides a working `schema -> select -> emit` prototype:
+Phase 1 provides a working schema-aware pipeline prototype:
 
 - lexical analysis with source-positioned tokens;
 - recursive-descent parsing and an inspectable AST;
 - schema symbols, name resolution, and static projection checks;
+- typed arithmetic, comparison, and Boolean expressions;
+- `require` data constraints and `keep where` row filtering;
+- a logical plan and postfix expression IR through `explain`;
 - streaming CSV validation and projection;
-- diagnostics for lexical, syntax, semantic, and runtime errors; and
+- source-line and caret diagnostics for compiler errors; and
 - tests for valid programs, invalid programs, CSV edge cases, and safe output.
 
 The prototype validates all declared fields and preserves the selected column
 order and original CSV cell text. It refuses to overwrite existing output files.
-Expressions, validation/filter statements, IR, optimization, bytecode, a virtual
-machine, and lineage generation are planned for later phases.
+Derived fields, optimization, bytecode, a virtual machine, and lineage generation
+are planned for later phases.
 
 ## Run it
 
@@ -41,6 +47,7 @@ Python 3.12 or later is required. There are no third-party runtime dependencies.
 python -m veriflow tokens examples/project_students.vfl
 python -m veriflow ast examples/project_students.vfl
 python -m veriflow check examples/project_students.vfl
+python -m veriflow explain examples/project_students.vfl
 python -m veriflow run examples/project_students.vfl
 ```
 

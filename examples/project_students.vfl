@@ -3,7 +3,9 @@ schema Student {
     marks: int;
 }
 
-pipeline ProjectStudents from "students.csv" as Student {
+pipeline PassingStudents from "students.csv" as Student {
+    require marks >= 0 and marks <= 100 else "marks must be between 0 and 100";
+    keep where marks >= 40;
     select name, marks;
     emit "selected_students.csv";
 }

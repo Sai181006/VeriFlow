@@ -103,3 +103,30 @@ class CliTests(unittest.TestCase):
             self.assertIn("runtime error:", stderr)
             self.assertIn("CSV line 2: field 'marks' requires int", stderr)
             self.assertFalse((root / "out.csv").exists())
+
+    def test_explain_shows_logical_plan_and_ir(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "plan.vfl"
+            path.write_text('schema S { marks: int; } pipeline P from "in.csv" as S {'
+                            ' require marks >= 0 else "negative"; keep where marks >= 40;'
+                            ' select marks; emit "out.csv"; }')
+            status, stdout, stderr = self.run_cli(path, "explain")
+            self.assertEqual((status, stderr), (0, ""))
+            self.assertIn("LOGICAL PLAN", stdout)
+            self.assertIn("REQUIRE negative", stdout)
+            self.assertIn("LOAD_FIELD marks", stdout)
+            self.assertIn("COMPARE_GE", stdout)
+            self.assertFalse((Path(folder) / "out.csv").exists())
+
+    def test_diagnostics_include_source_line_and_caret(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "bad.vfl"
+            path.write_text('schema S { marks: int; }\n'
+                            'pipeline P from "in.csv" as S {\n'
+                            '    keep where makrs >= 40;\n'
+                            '    select marks; emit "out.csv";\n}', encoding="utf-8")
+            status, stdout, stderr = self.run_cli(path, "check")
+            self.assertEqual((status, stdout), (1, ""))
+            self.assertIn("3:16: semantic error: Unknown field 'makrs'", stderr)
+            self.assertIn("    keep where makrs >= 40;", stderr)
+            self.assertIn("               ^^^^^", stderr)

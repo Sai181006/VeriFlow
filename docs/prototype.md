@@ -8,21 +8,22 @@ From the repository directory, with Python 3.12 or later:
 python -m veriflow tokens examples/project_students.vfl
 python -m veriflow ast examples/project_students.vfl
 python -m veriflow check examples/project_students.vfl
+python -m veriflow explain examples/project_students.vfl
 python -m veriflow run examples/project_students.vfl
 python -m unittest discover -s tests -v
 ```
 
-The example selects name and marks for all three students. Expected output at
+The example checks that marks are in the range 0-100, keeps students with marks
+of at least 40, and selects name and marks. Expected output at
 `examples/selected_students.csv`:
 
 ```csv
 name,marks
 Anika,82
-Ravi,38
 "Mira, S",91
 ```
 
-The run command prints resolved input/output paths, `rows_written: 3`, and
+The run command prints resolved paths, `rows_written: 2`, `rows_filtered: 1`, and
 `columns: ["name", "marks"]` as JSON. Repeat runs refuse an existing output.
 Change the emit path to a fresh destination when another result is needed.
 
@@ -43,10 +44,25 @@ Change the emit path to a fresh destination when another result is needed.
   bool accepts exactly lowercase true or false.
 - Numeric whitespace, empty numeric/Boolean cells, exponents, NaN, and Infinity
   are rejected. Numeric spellings are validated without floating-point
-  conversion. Selected cells preserve signs, leading zeros, and decimal scale.
+  conversion. Expression arithmetic uses exact rational values, while selected
+  cells preserve signs, leading zeros, and decimal scale.
 - All schema fields are validated on every row. Extra undeclared columns are
   checked for record width but have no type constraints. Row order and selected
-  column order are preserved. No filtering, derivation, or coercion is performed.
+  column order are preserved. `require` aborts on a false condition with its
+  message; `keep where` drops false rows. No derivation or coercion is performed.
+
+## Expressions and explain output
+
+Conditions support field references, int/decimal/text/bool literals, parentheses,
+unary `-` and `not`, arithmetic, comparisons, equality, and short-circuiting
+`and`/`or`. Standard precedence is encoded directly by the parser. Static
+analysis rejects invalid operand types and non-Boolean conditions before CSV IO.
+
+`explain` performs lexical, syntax, and semantic analysis without opening the
+CSV. It displays SCAN, VALIDATE, REQUIRE, FILTER, PROJECT, and EMIT plan steps.
+Each condition is lowered to typed postfix instructions such as LOAD_FIELD
+(with a `name:type` operand),
+PUSH_INT, COMPARE_GE, and BOOLEAN_AND. This is the prototype's first explicit IR.
 
 ## Paths and failure behavior
 
@@ -72,10 +88,12 @@ Lexical, syntax, semantic, data, and file errors return exit status 1 without a
 success summary. Runtime diagnostics include the source span and affected CSV
 path; type and record-width failures include the CSV physical ending line.
 CSV syntax follows the standard library reader, not a custom CSV grammar.
+Compiler diagnostics also print the affected source line and a caret range.
 
 ## Phase boundary
 
-This prototype demonstrates source-to-AST-to-checked-projection-to-CSV execution.
-It executes the checked AST directly. It does not yet generate typed IR or
-bytecode, optimize code, execute a VM, produce lineage, recover from errors, or
-support require/let/keep expressions. Those remain Phase Two/Three compiler work.
+This prototype demonstrates source-to-AST-to-typed-plan-to-CSV execution.
+Conditions have a small postfix IR, while the runtime evaluates the checked typed
+expressions directly. It does not yet generate full pipeline bytecode, optimize
+code, execute a VM, produce lineage, recover from errors, or support derived
+fields through `let`. Those remain later compiler work.

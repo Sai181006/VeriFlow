@@ -4,7 +4,8 @@ Statement ordering is checked by semantic analysis, not hidden in the grammar.
 The public entry point always obtains a complete EOF-terminated lexer stream.
 """
 
-from .ast import Emit, Field, Name, Pipeline, Program, Schema, Select, StringLiteral
+from .ast import (Binary, Emit, Field, Keep, Literal, Name, Pipeline, Program,
+                  Require, Schema, Select, StringLiteral, Unary, Variable)
 from .lexer import Span, Token, tokenize
 
 
@@ -58,10 +59,23 @@ class _Parser:
         end = self.expect("SEMICOLON")
         return Field(name, type_name, Span(name.span.start, end.span.end))
 
-    def statement(self) -> Select | Emit:
+    def statement(self) -> Require | Keep | Select | Emit:
         start = self.current
-        if start.kind in {"REQUIRE", "LET", "KEEP"}:
+        if start.kind == "LET":
             raise ParseError(f"Statement {start.lexeme!r} is not supported in the projection prototype", start.span)
+        if start.kind == "REQUIRE":
+            self.expect("REQUIRE")
+            condition = self.expression()
+            self.expect("ELSE")
+            message = self.string()
+            end = self.expect("SEMICOLON")
+            return Require(condition, message, Span(start.span.start, end.span.end))
+        if start.kind == "KEEP":
+            self.expect("KEEP")
+            self.expect("WHERE")
+            condition = self.expression()
+            end = self.expect("SEMICOLON")
+            return Keep(condition, Span(start.span.start, end.span.end))
         if start.kind == "SELECT":
             self.expect("SELECT")
             fields = [self.name()]
@@ -74,6 +88,96 @@ class _Parser:
         path = self.string()
         end = self.expect("SEMICOLON")
         return Emit(path, Span(start.span.start, end.span.end))
+
+    def expression(self):
+        return self.or_expression()
+
+    def or_expression(self):
+        expression = self.and_expression()
+        while self.current.kind == "OR":
+            operator = self.expect("OR")
+            right = self.and_expression()
+            expression = Binary(expression, operator.value, right,
+                                Span(expression.span.start, right.span.end))
+        return expression
+
+    def and_expression(self):
+        expression = self.equality()
+        while self.current.kind == "AND":
+            operator = self.expect("AND")
+            right = self.equality()
+            expression = Binary(expression, operator.value, right,
+                                Span(expression.span.start, right.span.end))
+        return expression
+
+    def equality(self):
+        expression = self.comparison()
+        while self.current.kind in {"EQ", "NE"}:
+            operator = self.expect("EQ", "NE")
+            right = self.comparison()
+            expression = Binary(expression, operator.value, right,
+                                Span(expression.span.start, right.span.end))
+        return expression
+
+    def comparison(self):
+        expression = self.term()
+        while self.current.kind in {"LT", "LE", "GT", "GE"}:
+            operator = self.expect("LT", "LE", "GT", "GE")
+            right = self.term()
+            expression = Binary(expression, operator.value, right,
+                                Span(expression.span.start, right.span.end))
+        return expression
+
+    def term(self):
+        expression = self.factor()
+        while self.current.kind in {"PLUS", "MINUS"}:
+            operator = self.expect("PLUS", "MINUS")
+            right = self.factor()
+            expression = Binary(expression, operator.value, right,
+                                Span(expression.span.start, right.span.end))
+        return expression
+
+    def factor(self):
+        expression = self.unary()
+        while self.current.kind in {"STAR", "SLASH"}:
+            operator = self.expect("STAR", "SLASH")
+            right = self.unary()
+            expression = Binary(expression, operator.value, right,
+                                Span(expression.span.start, right.span.end))
+        return expression
+
+    def unary(self):
+        if self.current.kind in {"NOT", "MINUS"}:
+            operator = self.expect("NOT", "MINUS")
+            operand = self.unary()
+            return Unary(operator.value, operand, Span(operator.span.start, operand.span.end))
+        return self.primary()
+
+    def primary(self):
+        token = self.current
+        if token.kind in {"INT_LITERAL", "DECIMAL_LITERAL", "STRING", "TRUE", "FALSE"}:
+            self.expect(token.kind)
+            type_name = {"INT_LITERAL": "int", "DECIMAL_LITERAL": "decimal",
+                         "STRING": "text", "TRUE": "bool", "FALSE": "bool"}[token.kind]
+            value = token.kind == "TRUE" if token.kind in {"TRUE", "FALSE"} else token.value
+            return Literal(value, type_name, token.span)
+        if token.kind == "IDENT":
+            name = self.name()
+            return Variable(name, name.span)
+        if token.kind == "LPAREN":
+            start = self.expect("LPAREN")
+            expression = self.expression()
+            end = self.expect("RPAREN")
+            # Parentheses affect precedence and the diagnostic span, not node kind.
+            if isinstance(expression, Literal):
+                return Literal(expression.value, expression.type, Span(start.span.start, end.span.end))
+            if isinstance(expression, Variable):
+                return Variable(expression.name, Span(start.span.start, end.span.end))
+            if isinstance(expression, Unary):
+                return Unary(expression.operator, expression.operand, Span(start.span.start, end.span.end))
+            return Binary(expression.left, expression.operator, expression.right,
+                          Span(start.span.start, end.span.end))
+        self.expect("INT_LITERAL", "DECIMAL_LITERAL", "STRING", "TRUE", "FALSE", "IDENT", "LPAREN")
 
     def pipeline(self) -> Pipeline:
         start = self.expect("PIPELINE")

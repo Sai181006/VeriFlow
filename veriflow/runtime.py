@@ -2,6 +2,7 @@
 
 import csv
 from dataclasses import dataclass
+from fractions import Fraction
 import os
 from pathlib import Path
 import re
@@ -10,7 +11,7 @@ import tempfile
 
 from .ast import Emit
 from .lexer import Span
-from .semantics import CheckedProgram
+from .semantics import CheckedProgram, TypedExpression
 
 
 class ExecutionError(ValueError):
@@ -24,6 +25,7 @@ class ExecutionResult:
     input_path: str
     output_path: str
     rows_written: int
+    rows_filtered: int
     columns: tuple[str, ...]
 
 
@@ -43,6 +45,41 @@ def _valid(value: str, type_name: str) -> bool:
     if type_name == "bool":
         return value in {"true", "false"}
     return False
+
+
+def _convert(value: str, type_name: str):
+    if type_name in {"int", "decimal"}:
+        return Fraction(value)
+    if type_name == "bool":
+        return value == "true"
+    return value
+
+
+def _evaluate(expression: TypedExpression, row: dict[str, object]):
+    if expression.kind == "literal":
+        return _convert(str(expression.value), expression.type) if expression.type != "bool" else expression.value
+    if expression.kind == "field":
+        return row[str(expression.value)]
+    if expression.kind == "unary":
+        assert expression.left is not None
+        value = _evaluate(expression.left, row)
+        return not value if expression.operator == "not" else -value
+    assert expression.left is not None and expression.right is not None
+    left = _evaluate(expression.left, row)
+    if expression.operator == "and" and not left:
+        return False
+    if expression.operator == "or" and left:
+        return True
+    right = _evaluate(expression.right, row)
+    operations = {
+        "+": lambda: left + right, "-": lambda: left - right,
+        "*": lambda: left * right, "/": lambda: left / right,
+        "==": lambda: left == right, "!=": lambda: left != right,
+        "<": lambda: left < right, "<=": lambda: left <= right,
+        ">": lambda: left > right, ">=": lambda: left >= right,
+        "and": lambda: bool(right), "or": lambda: bool(right),
+    }
+    return operations[expression.operator]()
 
 
 def execute(checked: CheckedProgram, source_path: Path) -> ExecutionResult:
@@ -90,6 +127,7 @@ def execute(checked: CheckedProgram, source_path: Path) -> ExecutionResult:
                 writer = csv.writer(output_stream, lineterminator="\n")
                 writer.writerow(columns)
                 count = 0
+                filtered = 0
                 while True:
                     active_path, active_span = input_path, pipeline.input_path.span
                     row = next(reader, None)
@@ -102,6 +140,26 @@ def execute(checked: CheckedProgram, source_path: Path) -> ExecutionResult:
                         if not _valid(row[indices[symbol.name]], symbol.type):
                             raise ExecutionError(f"{input_path}: CSV line {reader.line_num}: "
                                                  f"field {symbol.name!r} requires {symbol.type}", symbol.declaration)
+                    typed_row = {symbol.name: _convert(row[indices[symbol.name]], symbol.type)
+                                 for symbol in checked.symbols}
+                    keep_row = True
+                    for condition in checked.conditions:
+                        try:
+                            passed = bool(_evaluate(condition.expression, typed_row))
+                        except (ZeroDivisionError, ArithmeticError) as error:
+                            raise ExecutionError(f"{input_path}: CSV line {reader.line_num}: "
+                                                 f"expression failed: {error}",
+                                                 condition.expression.span) from error
+                        if condition.kind == "require" and not passed:
+                            raise ExecutionError(f"{input_path}: CSV line {reader.line_num}: "
+                                                 f"requirement failed: {condition.message}",
+                                                 condition.span)
+                        if condition.kind == "keep" and not passed:
+                            keep_row = False
+                            filtered += 1
+                            break
+                    if not keep_row:
+                        continue
                     active_path, active_span = output_path, emit.path.span
                     writer.writerow([row[indices[name]] for name in columns])
                     count += 1
@@ -109,7 +167,7 @@ def execute(checked: CheckedProgram, source_path: Path) -> ExecutionResult:
         # Same-directory linking is atomic and refuses a concurrently created file.
         # If the filesystem cannot link, fail rather than overwrite or copy partially.
         os.link(temporary, output_path)
-        return ExecutionResult(str(input_path), str(output_path), count, columns)
+        return ExecutionResult(str(input_path), str(output_path), count, filtered, columns)
     except (OSError, UnicodeError, csv.Error) as error:
         raise ExecutionError(f"{active_path}: {error}", active_span) from error
     finally:

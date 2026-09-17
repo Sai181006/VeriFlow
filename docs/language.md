@@ -10,9 +10,8 @@ schema_decl   = "schema" IDENT "{" field_decl+ "}" ;
 field_decl    = IDENT ":" type ";" ;
 type          = "int" | "decimal" | "text" | "bool" ;
 pipeline_decl = "pipeline" IDENT "from" STRING "as" IDENT "{" statement+ "}" ;
-statement     = require_stmt | let_stmt | keep_stmt | select_stmt | emit_stmt ;
+statement     = require_stmt | keep_stmt | select_stmt | emit_stmt ;
 require_stmt  = "require" expression "else" STRING ";" ;
-let_stmt      = "let" IDENT "=" expression ";" ;
 keep_stmt     = "keep" "where" expression ";" ;
 select_stmt   = "select" IDENT ("," IDENT)* ";" ;
 emit_stmt     = "emit" STRING ";" ;
@@ -46,35 +45,42 @@ primary       = NUMBER | STRING | "true" | "false" | IDENT | "(" expression ")" 
 - Lexical errors stop scanning and report the start of the invalid token. Error
   recovery remains later work. The Stage 2 parser consumes these tokens directly.
 
-## Planned semantic rules
+## Semantic rules
 
-Schema fields and derived fields must have unique names. References resolve to
-schema fields or earlier derived fields. Arithmetic requires numeric operands;
+Schema fields must have unique names. References resolve to schema fields.
+Arithmetic requires numeric operands;
 Boolean operations and conditions require bool. Selected fields must exist and
 may not repeat. Exactly one select is followed by exactly one terminal emit.
 The pipeline's schema reference must resolve. Literal division by zero is a
 compile-time error; data-dependent zero is checked during execution.
 
-The implemented projection syntax permits a nonempty list of select/emit
-statements; semantic analysis requires exactly one select followed by exactly
-one emit. A schema must have at least one field. A source must contain exactly
+The implemented pipeline syntax permits zero or more require/keep statements,
+followed by exactly one select and one terminal emit. A schema must have at least
+one field. A source must contain exactly
 one schema followed by exactly one pipeline, with no trailing tokens. Schema
-and pipeline names must be distinct. The full expression grammar above is a
-future specification, not implemented syntax.
+and pipeline names must be distinct.
 
-The initial projection prototype rejects require/let/keep explicitly until
-they are implemented. Static checks resolve the schema reference and selected
+The prototype implements require and keep expressions and continues to reject
+`let` explicitly. Static checks resolve the schema reference and selected
 fields, reject duplicate declarations and selections, and preserve field order
 and primitive types in the symbol table. Unknown names include a likely-name
 suggestion when available. Syntax and semantic errors fail at the first error
 and retain source spans. The parser uses recursive descent rather than the
 report's proposed Lark infrastructure.
 
+Expression types are inferred recursively. Arithmetic accepts int/decimal and
+produces int except division or mixed-decimal operations, which produce decimal.
+Ordering comparisons accept numeric operands. Equality accepts identical types
+or mixed numeric types. Boolean operators require bool, and require/keep
+conditions must produce bool. Literal division by zero is a semantic error;
+data-dependent division by zero is a runtime error. `and` and `or` short-circuit.
+
 ## Implemented CSV projection semantics
 
-Stage 3 implements the execution contract in [prototype behavior](prototype.md).
+The runtime implements the execution contract in [prototype behavior](prototype.md).
 Input and output path strings must be nonempty and contain no NUL characters;
 these checks also run during `check`. CSV cells retain their exact text while
 every declared field is validated against its schema type. Projection processes
 all rows, preserving row order and selecting columns in source selection order.
-Invalid data aborts execution; no row rejection or filtering is implemented.
+Invalid schema data or a failed require aborts execution. A false keep condition
+filters that row. Conditions execute in source order before projection.

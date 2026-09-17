@@ -23,7 +23,7 @@ class SemanticTests(unittest.TestCase):
             (source('select name;'), "exactly one emit"),
             (source('select name; select marks; emit "x";'), "Duplicate select"),
             (source('select name; emit "x"; emit "y";'), "Duplicate emit"),
-            (source('emit "x"; select name;'), "select must precede"),
+            (source('emit "x"; select name;'), "emit must be terminal"),
         ]
         for text, message in cases:
             with self.subTest(message=message), self.assertRaisesRegex(SemanticError, message):
@@ -51,3 +51,27 @@ class SemanticTests(unittest.TestCase):
                      source().replace('"out.csv"', '"bad\\u0000.csv"')):
             with self.subTest(text=text), self.assertRaisesRegex(SemanticError, "path must be nonempty"):
                 analyze(parse(text))
+
+    def test_typed_conditions(self):
+        checked = analyze(parse(source(
+            'require marks >= 0 and marks <= 100 else "range"; '
+            'keep where not (marks < 40); select name; emit "x";')))
+        self.assertEqual([condition.kind for condition in checked.conditions], ["require", "keep"])
+        self.assertTrue(all(condition.expression.type == "bool" for condition in checked.conditions))
+        self.assertEqual(checked.conditions[0].message, "range")
+
+    def test_expression_type_errors_and_unknown_fields(self):
+        cases = [
+            ('keep where name + 1; select name; emit "x";', "requires numeric operands"),
+            ('keep where marks and true; select name; emit "x";', "requires bool operands"),
+            ('keep where name > "A"; select name; emit "x";', "requires numeric operands"),
+            ('keep where name == marks; select name; emit "x";', "compatible operands"),
+            ('keep where marks + 1; select name; emit "x";', "condition must have type bool"),
+            ('keep where makrs > 1; select name; emit "x";', "did you mean 'marks'"),
+            ('keep where marks / 0 > 1; select name; emit "x";', "Literal division by zero"),
+            ('keep where marks / -0 > 1; select name; emit "x";', "Literal division by zero"),
+            ('select name; keep where true; emit "x";', "require/keep must precede"),
+        ]
+        for body, message in cases:
+            with self.subTest(body=body), self.assertRaisesRegex(SemanticError, message):
+                analyze(parse(source(body)))
