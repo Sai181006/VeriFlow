@@ -1,0 +1,5 @@
+schema WineOld { alcohol: decimal; quality: int; residual_sugar: decimal; }
+pipeline WineSelected from "input.csv" as WineOld {
+    select quality, alcohol;
+    emit "output.csv";
+}

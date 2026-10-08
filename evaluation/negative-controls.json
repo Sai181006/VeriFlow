@@ -1,0 +1,66 @@
+[
+  {
+    "name": "require_strict",
+    "expected": "conditional",
+    "observed": "conditional",
+    "rule": "threshold-gap",
+    "witness": "divergence",
+    "conversion_failure_observed": false
+  },
+  {
+    "name": "derived_require",
+    "expected": "preserved",
+    "observed": "preserved",
+    "rule": "positive-integer-threshold",
+    "witness": null,
+    "conversion_failure_observed": false
+  },
+  {
+    "name": "executed_division",
+    "expected": "conditional",
+    "observed": "conditional",
+    "rule": "integral-decimal",
+    "witness": "divergence",
+    "conversion_failure_observed": false
+  },
+  {
+    "name": "observed_drop",
+    "expected": "breaking",
+    "observed": "breaking",
+    "rule": "required-field-dropped",
+    "witness": "collision",
+    "conversion_failure_observed": false
+  },
+  {
+    "name": "text_parse",
+    "expected": "unknown",
+    "observed": "unknown",
+    "rule": "unproved-conversion",
+    "witness": null,
+    "conversion_failure_observed": true
+  },
+  {
+    "name": "unsupported_bool_to_int",
+    "expected": "unknown",
+    "observed": "unknown",
+    "rule": "unsupported-mapping",
+    "witness": null,
+    "conversion_failure_observed": false
+  },
+  {
+    "name": "mixed_boolean_safe",
+    "expected": "preserved",
+    "observed": "preserved",
+    "rule": "positive-integer-threshold",
+    "witness": null,
+    "conversion_failure_observed": false
+  },
+  {
+    "name": "mixed_boolean_guarded",
+    "expected": "conditional",
+    "observed": "conditional",
+    "rule": "threshold-gap",
+    "witness": null,
+    "conversion_failure_observed": false
+  }
+]

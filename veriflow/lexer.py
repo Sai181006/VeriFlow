@@ -38,7 +38,8 @@ class LexError(ValueError):
 
 KEYWORDS = frozenset(
     "schema pipeline from as require else let keep where select emit "
-    "int decimal text bool true false and or not".split()
+    "int decimal text bool true false and or not evolve to rename add default "
+    "drop convert split into merge using".split()
 )
 SYMBOLS = {
     "{": "LBRACE", "}": "RBRACE", "(": "LPAREN", ")": "RPAREN",

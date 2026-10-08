@@ -69,6 +69,13 @@ class Select:
 
 
 @dataclass(frozen=True)
+class Let:
+    name: Name
+    expression: Expression
+    span: Span
+
+
+@dataclass(frozen=True)
 class Require:
     condition: Expression
     message: StringLiteral
@@ -92,7 +99,7 @@ class Pipeline:
     name: Name
     input_path: StringLiteral
     schema: Name
-    statements: tuple[Require | Keep | Select | Emit, ...]
+    statements: tuple[Let | Require | Keep | Select | Emit, ...]
     span: Span
 
 

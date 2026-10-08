@@ -1,0 +1,415 @@
+{
+  "python": "3.12.12",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "repetitions": 5,
+  "datasets": {
+    "abalone": {
+      "source": "https://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.data",
+      "raw_sha256": "de37cdcdcaaa50c309d514f248f7c2302a5f1f88c168905eba23fe2fbc78449f",
+      "prepared_sha256": "04709d821841d76aabe2db5f4f87c5c504e84996062d3b9d3c08187167957255"
+    },
+    "iris": {
+      "source": "https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data",
+      "raw_sha256": "6f608b71a7317216319b4d27b4d9bc84e6abd734eda7872b71a458569e2656c0",
+      "prepared_sha256": "8121e55021d938dc1d9e2171d35bb5552ef0671143420a75c68d3f3db3ce80e3"
+    },
+    "wine_red": {
+      "source": "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv",
+      "raw_sha256": "4a402cf041b025d4566d954c3b9ba8635a3a8a01e039005d97d6a710278cf05e",
+      "prepared_sha256": "cbaf6aeede24e3797560da242737ad9ee11e96334b1a5a7e4f3964e947326573"
+    }
+  },
+  "cases": [
+    {
+      "dataset": "abalone",
+      "case": "safe",
+      "rows": 4177,
+      "schema_label": "lossy",
+      "lineage_only": "unknown",
+      "sample_first_10": "none_observed",
+      "impact_status": "preserved",
+      "rules": [
+        "unused-source",
+        "positive-integer-threshold",
+        "exact-reconstruction"
+      ],
+      "guards": [],
+      "witness_validated": false,
+      "observed_differences": 0,
+      "guard_pass": 4177,
+      "guard_reject": 0,
+      "guarded_violations": 0,
+      "compile_median_ms": 0.435,
+      "impact_median_ms": 0.069,
+      "old_runtime_median_ms": 120.197,
+      "evolved_runtime_median_ms": 155.417,
+      "old_counts": {
+        "written": 1472,
+        "filtered": 2705,
+        "rejected": 0,
+        "guard_rejected": 0
+      },
+      "evolved_counts": {
+        "written": 1472,
+        "filtered": 2705,
+        "rejected": 0,
+        "guard_rejected": 0
+      }
+    },
+    {
+      "dataset": "abalone",
+      "case": "strict",
+      "rows": 4177,
+      "schema_label": "lossy",
+      "lineage_only": "unknown",
+      "sample_first_10": "none_observed",
+      "impact_status": "conditional",
+      "rules": [
+        "unused-source",
+        "threshold-gap",
+        "exact-reconstruction"
+      ],
+      "guards": [
+        {
+          "field": "whole_weight",
+          "kind": "outside_positive_threshold_gap",
+          "threshold": 1
+        }
+      ],
+      "witness_validated": true,
+      "observed_differences": 1395,
+      "guard_pass": 2782,
+      "guard_reject": 1395,
+      "guarded_violations": 0,
+      "compile_median_ms": 0.326,
+      "impact_median_ms": 0.429,
+      "old_runtime_median_ms": 89.735,
+      "evolved_runtime_median_ms": 167.111,
+      "old_counts": {
+        "written": 1471,
+        "filtered": 2706,
+        "rejected": 0,
+        "guard_rejected": 0
+      },
+      "evolved_counts": {
+        "written": 76,
+        "filtered": 2706,
+        "rejected": 1395,
+        "guard_rejected": 1395
+      }
+    },
+    {
+      "dataset": "abalone",
+      "case": "selected",
+      "rows": 4177,
+      "schema_label": "lossy",
+      "lineage_only": "unknown",
+      "sample_first_10": "divergence",
+      "impact_status": "conditional",
+      "rules": [
+        "unused-source",
+        "integral-decimal",
+        "exact-reconstruction"
+      ],
+      "guards": [
+        {
+          "field": "whole_weight",
+          "kind": "integral_decimal",
+          "threshold": null
+        }
+      ],
+      "witness_validated": true,
+      "observed_differences": 4176,
+      "guard_pass": 1,
+      "guard_reject": 4176,
+      "guarded_violations": 0,
+      "compile_median_ms": 0.486,
+      "impact_median_ms": 0.4,
+      "old_runtime_median_ms": 68.259,
+      "evolved_runtime_median_ms": 51.585,
+      "old_counts": {
+        "written": 4177,
+        "filtered": 0,
+        "rejected": 0,
+        "guard_rejected": 0
+      },
+      "evolved_counts": {
+        "written": 1,
+        "filtered": 0,
+        "rejected": 4176,
+        "guard_rejected": 4176
+      }
+    },
+    {
+      "dataset": "iris",
+      "case": "safe",
+      "rows": 150,
+      "schema_label": "lossy",
+      "lineage_only": "unknown",
+      "sample_first_10": "none_observed",
+      "impact_status": "preserved",
+      "rules": [
+        "unused-source",
+        "positive-integer-threshold",
+        "exact-reconstruction"
+      ],
+      "guards": [],
+      "witness_validated": false,
+      "observed_differences": 0,
+      "guard_pass": 150,
+      "guard_reject": 0,
+      "guarded_violations": 0,
+      "compile_median_ms": 0.279,
+      "impact_median_ms": 0.041,
+      "old_runtime_median_ms": 11.885,
+      "evolved_runtime_median_ms": 12.555,
+      "old_counts": {
+        "written": 128,
+        "filtered": 22,
+        "rejected": 0,
+        "guard_rejected": 0
+      },
+      "evolved_counts": {
+        "written": 128,
+        "filtered": 22,
+        "rejected": 0,
+        "guard_rejected": 0
+      }
+    },
+    {
+      "dataset": "iris",
+      "case": "strict",
+      "rows": 150,
+      "schema_label": "lossy",
+      "lineage_only": "unknown",
+      "sample_first_10": "divergence",
+      "impact_status": "conditional",
+      "rules": [
+        "unused-source",
+        "threshold-gap",
+        "exact-reconstruction"
+      ],
+      "guards": [
+        {
+          "field": "sepal_length",
+          "kind": "outside_positive_threshold_gap",
+          "threshold": 5
+        }
+      ],
+      "witness_validated": true,
+      "observed_differences": 51,
+      "guard_pass": 99,
+      "guard_reject": 51,
+      "guarded_violations": 0,
+      "compile_median_ms": 0.282,
+      "impact_median_ms": 0.462,
+      "old_runtime_median_ms": 9.48,
+      "evolved_runtime_median_ms": 10.692,
+      "old_counts": {
+        "written": 118,
+        "filtered": 32,
+        "rejected": 0,
+        "guard_rejected": 0
+      },
+      "evolved_counts": {
+        "written": 67,
+        "filtered": 32,
+        "rejected": 51,
+        "guard_rejected": 51
+      }
+    },
+    {
+      "dataset": "iris",
+      "case": "selected",
+      "rows": 150,
+      "schema_label": "lossy",
+      "lineage_only": "unknown",
+      "sample_first_10": "divergence",
+      "impact_status": "conditional",
+      "rules": [
+        "unused-source",
+        "integral-decimal",
+        "exact-reconstruction"
+      ],
+      "guards": [
+        {
+          "field": "sepal_length",
+          "kind": "integral_decimal",
+          "threshold": null
+        }
+      ],
+      "witness_validated": true,
+      "observed_differences": 133,
+      "guard_pass": 17,
+      "guard_reject": 133,
+      "guarded_violations": 0,
+      "compile_median_ms": 0.244,
+      "impact_median_ms": 0.147,
+      "old_runtime_median_ms": 8.863,
+      "evolved_runtime_median_ms": 8.847,
+      "old_counts": {
+        "written": 150,
+        "filtered": 0,
+        "rejected": 0,
+        "guard_rejected": 0
+      },
+      "evolved_counts": {
+        "written": 17,
+        "filtered": 0,
+        "rejected": 133,
+        "guard_rejected": 133
+      }
+    },
+    {
+      "dataset": "iris",
+      "case": "split",
+      "rows": 150,
+      "schema_label": "conditional",
+      "lineage_only": "unknown",
+      "sample_first_10": "none_observed",
+      "impact_status": "unknown",
+      "rules": [
+        "unproved-structural-rule",
+        "unused-source",
+        "unused-source"
+      ],
+      "guards": [],
+      "witness_validated": false,
+      "observed_differences": 0,
+      "guard_pass": null,
+      "guard_reject": null,
+      "guarded_violations": null,
+      "compile_median_ms": 0.218,
+      "impact_median_ms": 0.254,
+      "old_runtime_median_ms": 9.12,
+      "evolved_runtime_median_ms": null,
+      "old_counts": {
+        "written": 150,
+        "filtered": 0,
+        "rejected": 0,
+        "guard_rejected": 0
+      },
+      "evolved_counts": null
+    },
+    {
+      "dataset": "wine_red",
+      "case": "safe",
+      "rows": 1599,
+      "schema_label": "lossy",
+      "lineage_only": "unknown",
+      "sample_first_10": "none_observed",
+      "impact_status": "preserved",
+      "rules": [
+        "unused-source",
+        "positive-integer-threshold",
+        "exact-reconstruction"
+      ],
+      "guards": [],
+      "witness_validated": false,
+      "observed_differences": 0,
+      "guard_pass": 1599,
+      "guard_reject": 0,
+      "guarded_violations": 0,
+      "compile_median_ms": 0.415,
+      "impact_median_ms": 0.061,
+      "old_runtime_median_ms": 85.042,
+      "evolved_runtime_median_ms": 76.015,
+      "old_counts": {
+        "written": 919,
+        "filtered": 680,
+        "rejected": 0,
+        "guard_rejected": 0
+      },
+      "evolved_counts": {
+        "written": 919,
+        "filtered": 680,
+        "rejected": 0,
+        "guard_rejected": 0
+      }
+    },
+    {
+      "dataset": "wine_red",
+      "case": "strict",
+      "rows": 1599,
+      "schema_label": "lossy",
+      "lineage_only": "unknown",
+      "sample_first_10": "divergence",
+      "impact_status": "conditional",
+      "rules": [
+        "unused-source",
+        "threshold-gap",
+        "exact-reconstruction"
+      ],
+      "guards": [
+        {
+          "field": "alcohol",
+          "kind": "outside_positive_threshold_gap",
+          "threshold": 10
+        }
+      ],
+      "witness_validated": true,
+      "observed_differences": 385,
+      "guard_pass": 1214,
+      "guard_reject": 385,
+      "guarded_violations": 0,
+      "compile_median_ms": 0.317,
+      "impact_median_ms": 0.526,
+      "old_runtime_median_ms": 74.176,
+      "evolved_runtime_median_ms": 102.249,
+      "old_counts": {
+        "written": 852,
+        "filtered": 747,
+        "rejected": 0,
+        "guard_rejected": 0
+      },
+      "evolved_counts": {
+        "written": 467,
+        "filtered": 747,
+        "rejected": 385,
+        "guard_rejected": 385
+      }
+    },
+    {
+      "dataset": "wine_red",
+      "case": "selected",
+      "rows": 1599,
+      "schema_label": "lossy",
+      "lineage_only": "unknown",
+      "sample_first_10": "divergence",
+      "impact_status": "conditional",
+      "rules": [
+        "unused-source",
+        "integral-decimal",
+        "exact-reconstruction"
+      ],
+      "guards": [
+        {
+          "field": "alcohol",
+          "kind": "integral_decimal",
+          "threshold": null
+        }
+      ],
+      "witness_validated": true,
+      "observed_differences": 1409,
+      "guard_pass": 190,
+      "guard_reject": 1409,
+      "guarded_violations": 0,
+      "compile_median_ms": 0.633,
+      "impact_median_ms": 0.491,
+      "old_runtime_median_ms": 85.612,
+      "evolved_runtime_median_ms": 68.592,
+      "old_counts": {
+        "written": 1599,
+        "filtered": 0,
+        "rejected": 0,
+        "guard_rejected": 0
+      },
+      "evolved_counts": {
+        "written": 190,
+        "filtered": 0,
+        "rejected": 1409,
+        "guard_rejected": 1409
+      }
+    }
+  ]
+}

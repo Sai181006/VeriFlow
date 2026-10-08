@@ -130,3 +130,11 @@ class CliTests(unittest.TestCase):
             self.assertIn("3:16: semantic error: Unknown field 'makrs'", stderr)
             self.assertIn("    keep where makrs >= 40;", stderr)
             self.assertIn("               ^^^^^", stderr)
+
+    def test_guided_demo_command(self):
+        path = Path(__file__).resolve().parents[1] / "examples/project_students.vfl"
+        status, stdout, stderr = self.run_cli(path, "demo")
+        self.assertEqual((status, stderr), (0, ""))
+        self.assertIn("VERIFLOW - GUIDED COMPILER DEMO", stdout)
+        self.assertIn("Rows written:  2", stdout)
+        self.assertIn("Rows filtered: 1", stdout)

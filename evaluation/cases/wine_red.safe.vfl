@@ -1,0 +1,6 @@
+schema WineOld { alcohol: decimal; quality: int; residual_sugar: decimal; }
+pipeline WineSafe from "input.csv" as WineOld {
+    keep where alcohol >= 10;
+    select quality;
+    emit "output.csv";
+}

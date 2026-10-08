@@ -1,0 +1,5 @@
+schema AbaloneOld { whole_weight: decimal; rings: int; sex: text; }
+pipeline AbaloneSelected from "input.csv" as AbaloneOld {
+    select rings, whole_weight;
+    emit "output.csv";
+}

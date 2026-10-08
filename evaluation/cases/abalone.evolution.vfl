@@ -1,0 +1,3 @@
+schema AbaloneOld { whole_weight: decimal; rings: int; sex: text; }
+schema AbaloneNew { whole_weight: int; rings: int; }
+evolve AbaloneOld to AbaloneNew { drop sex; }

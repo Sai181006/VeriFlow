@@ -1,0 +1,12 @@
+schema Student {
+    name: text;
+    marks: int;
+}
+
+pipeline StudentSummary from "students.csv" as Student {
+    require marks >= 0 and marks <= 100 else "marks must be between 0 and 100";
+    let percentage = marks / 1;
+    let passed = percentage >= 40;
+    select name, percentage, passed;
+    emit "student_summary.csv";
+}

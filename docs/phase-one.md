@@ -37,10 +37,9 @@ headers and declared field types, and streams selected columns into a new output
 file. Successful output is published after all input passes validation. See
 [prototype behavior](prototype.md) and [Stage 3 audit](stage-three-audit.md).
 
-## Deferred work
+## Later phases
 
-The prototype has since been extended with typed expressions, `require`, `keep
-where`, caret diagnostics, and an `explain` plan containing postfix expression
-IR. Derived fields through `let`, optimization, complete pipeline bytecode, VM,
-lineage, and recovery remain later compiler slices. This must not be described
-as the completed compiler.
+Phase 2 and Phase 3 are now implemented in separate modules and documented in
+`phase-two.md` and `phase-three.md`. They add derived fields, optimization,
+pipeline bytecode, a VM, lineage, rejected-row reports, benchmarks, and schema
+evolution. This file remains the record of the original Phase 1 boundary.

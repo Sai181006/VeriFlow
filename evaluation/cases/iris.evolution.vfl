@@ -1,0 +1,3 @@
+schema IrisOld { sepal_length: decimal; petal_width: decimal; species: text; }
+schema IrisNew { sepal_length: int; species: text; }
+evolve IrisOld to IrisNew { drop petal_width; }

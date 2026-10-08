@@ -5,6 +5,18 @@
 From the repository directory, with Python 3.12 or later:
 
 ```sh
+python demo.py
+```
+
+On Windows, `demo.cmd` can also be opened directly. The guided walkthrough
+prints the program, input, compiler summary, logical plan, generated CSV, and
+row totals. It copies relative-path inputs into a temporary directory and never
+publishes the example output. Absolute paths and paths escaping that temporary
+directory are refused in guided-demo mode.
+
+The individual stage commands remain available:
+
+```sh
 python -m veriflow tokens examples/project_students.vfl
 python -m veriflow ast examples/project_students.vfl
 python -m veriflow check examples/project_students.vfl
@@ -92,8 +104,8 @@ Compiler diagnostics also print the affected source line and a caret range.
 
 ## Phase boundary
 
-This prototype demonstrates source-to-AST-to-typed-plan-to-CSV execution.
-Conditions have a small postfix IR, while the runtime evaluates the checked typed
-expressions directly. It does not yet generate full pipeline bytecode, optimize
-code, execute a VM, produce lineage, recover from errors, or support derived
-fields through `let`. Those remain later compiler work.
+This document records the Phase 1 prototype contract. Phase 2 and Phase 3 retain
+these safety rules while adding `let`, optimization, full expression bytecode,
+a stack VM, lineage, rejected-row quarantine, benchmarking, and schema evolution.
+See `phase-two.md`, `phase-three.md`, and `schema-evolution.md` for the completed
+later-phase behavior.

@@ -1,0 +1,6 @@
+schema AbaloneOld { whole_weight: decimal; rings: int; sex: text; }
+pipeline AbaloneSafe from "input.csv" as AbaloneOld {
+    keep where whole_weight >= 1;
+    select rings;
+    emit "output.csv";
+}

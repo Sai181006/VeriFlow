@@ -1,0 +1,3 @@
+schema WineOld { alcohol: decimal; quality: int; residual_sugar: decimal; }
+schema WineNew { alcohol: int; quality: int; }
+evolve WineOld to WineNew { drop residual_sugar; }

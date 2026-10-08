@@ -44,6 +44,18 @@ class RuntimeTests(unittest.TestCase):
                              [["score", "name"], ["0.700", "Mira, S"], ["-12.50", "தமிழ்\nname"]])
         self.assertEqual(list(self.root.glob(".veriflow-*.tmp")), [])
 
+    def test_derived_fields_are_typed_evaluated_and_selected(self):
+        program = ('schema S { name: text; marks: int; } '
+                   'pipeline P from "input.csv" as S {'
+                   ' let percentage = marks / 2; keep where percentage >= 20;'
+                   ' select name, percentage; emit "derived.csv"; }')
+        self.source.write_text(program, encoding="utf-8")
+        self.write_input("name,marks\nA,81\nB,20\n")
+        result = execute(analyze(parse(program)), self.source)
+        self.assertEqual((result.rows_written, result.rows_filtered), (1, 1))
+        self.assertEqual((self.root / "derived.csv").read_text(encoding="utf-8"),
+                         "name,percentage\nA,40.5\n")
+
     def test_reordered_headers_and_extra_columns(self):
         self.write_input("extra,flag,score,age,name\nx,false,1,3,A\n")
         execute(self.checked, self.source)

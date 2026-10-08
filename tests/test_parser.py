@@ -1,7 +1,7 @@
 from pathlib import Path
 import unittest
 
-from veriflow.ast import Binary, Emit, Keep, Require, Select, Unary
+from veriflow.ast import Binary, Emit, Keep, Let, Require, Select, Unary
 from veriflow.lexer import LexError
 from veriflow.parser import ParseError, parse
 
@@ -48,9 +48,12 @@ class ParserTests(unittest.TestCase):
             with self.subTest(text=text), self.assertRaises(ParseError):
                 parse(text)
 
-    def test_let_remains_explicitly_unsupported(self):
-        with self.assertRaisesRegex(ParseError, "not supported"):
-            parse(source('let x = 1;'))
+    def test_let_builds_a_derived_field_node(self):
+        program = parse(source('let adjusted = marks + 2; select name, adjusted; emit "x";'))
+        statement = program.pipeline.statements[0]
+        self.assertIsInstance(statement, Let)
+        self.assertEqual(statement.name.value, "adjusted")
+        self.assertIsInstance(statement.expression, Binary)
 
     def test_conditions_and_expression_precedence(self):
         program = parse(source('require marks >= 0 and not false else "bad"; '

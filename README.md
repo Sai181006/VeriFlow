@@ -1,9 +1,10 @@
 # VeriFlow
 
-VeriFlow is a small compiler project for schema-aware CSV pipelines. A VeriFlow
-program declares the expected columns and types, selects output fields, and names
-the input and output CSV files. The compiler checks the program before execution
-and reports errors with source locations.
+VeriFlow is a small compiler for safe CSV pipelines and bidirectional schema
+evolution. It parses a SQL-like language, builds an AST, performs type and symbol
+checks, optimizes a typed IR, emits stack-machine bytecode, and executes it in a
+VM. It can also compile two schema versions into forward, reverse, and
+compatibility adapters with an explicit information-loss report.
 
 ```veriflow
 schema Student {
@@ -20,7 +21,7 @@ pipeline PassingStudents from "students.csv" as Student {
 }
 ```
 
-## Phase 1
+## Implemented phases
 
 Phase 1 provides a working schema-aware pipeline prototype:
 
@@ -34,22 +35,78 @@ Phase 1 provides a working schema-aware pipeline prototype:
 - source-line and caret diagnostics for compiler errors; and
 - tests for valid programs, invalid programs, CSV edge cases, and safe output.
 
+Phase 2 adds derived fields through `let`, typed derivation IR, constant folding,
+full pipeline bytecode, and a stack virtual machine. Phase 3 adds field-level
+lineage, rejected-row quarantine, benchmark results, and integrated valid,
+invalid, boundary, and recovery tests.
+
+The schema-evolution compiler supports unchanged fields, rename, add with a
+default, drop, type conversion, split, and merge. It generates three Python
+programs and a compatibility report, and verifies old -> new -> old round trips.
+
 The prototype validates all declared fields and preserves the selected column
 order and original CSV cell text. It refuses to overwrite existing output files.
-Derived fields, optimization, bytecode, a virtual machine, and lineage generation
-are planned for later phases.
+The implementation stays dependency-free at runtime and refuses to overwrite
+generated data or adapter programs.
 
 ## Run it
 
 Python 3.12 or later is required. There are no third-party runtime dependencies.
+
+For a presentation, double-click `demo.cmd` on Windows or run one command:
+
+```sh
+python demo.py
+```
+
+The default `all` mode first shows two incorrect inputs: a text value inside the
+integer `marks` column and a mark outside the allowed range. VeriFlow explains
+each failure and proves that no partial output was published. It then runs the
+corrected input and shows the source, compiler summary, explain plan, output CSV,
+and execution totals. Everything runs in temporary folders, so the example
+files are never changed.
+
+The two parts can also be presented separately with one command each:
+
+```sh
+python demo.py errors
+python demo.py success
+```
+
+On Windows, `demo.cmd errors` and `demo.cmd success` provide the same modes.
+
+Individual compiler stages can also be inspected:
 
 ```sh
 python -m veriflow tokens examples/project_students.vfl
 python -m veriflow ast examples/project_students.vfl
 python -m veriflow check examples/project_students.vfl
 python -m veriflow explain examples/project_students.vfl
+python -m veriflow optimize examples/project_students.vfl
+python -m veriflow bytecode examples/project_students.vfl
+python -m veriflow lineage examples/project_students.vfl
+python -m veriflow benchmark examples/project_students.vfl --iterations 25
 python -m veriflow run examples/project_students.vfl
 ```
+
+`examples/derived_students.vfl` is a compact Phase 2 example containing two
+derived fields. Use it with `ast`, `check`, `optimize`, `bytecode`, or `run`.
+
+Run the schema-evolution chat demonstration with:
+
+```sh
+python evolution_demo.py
+```
+
+Inspect and generate adapters with:
+
+```sh
+python -m veriflow evolution-check examples/chat_evolution.vfl
+python -m veriflow generate-adapters examples/chat_evolution.vfl --output-dir generated
+```
+
+The generated directory contains `forward_adapter.py`, `reverse_adapter.py`,
+`compatibility_adapter.py`, and `compatibility_report.json`.
 
 The `run` command creates `examples/selected_students.csv` and prints a JSON
 summary. Remove that generated file or use a new `emit` path before running the
@@ -61,5 +118,16 @@ Run the tests with:
 python -m unittest discover -s tests -v
 ```
 
-See the [language specification](docs/language.md), [prototype behavior](docs/prototype.md),
-and [Phase 1 stages](docs/phase-one.md) for more detail.
+See the [language specification](docs/language.md), [Phase 2](docs/phase-two.md),
+[Phase 3](docs/phase-three.md), and [schema evolution](docs/schema-evolution.md).
+
+The paper direction, implemented checker, evaluation pilot, and remaining work
+are documented in [paper research context](docs/paper-research-context.md),
+[impact method](docs/impact-method.md), [evaluation](evaluation/README.md), and
+[research tasks](docs/paper-research-tasks.md). The
+[second council review](docs/council-review-2026-10-08.md) explains the
+near-term additions and deferred research gaps.
+The reusable [eight-slide research presentation brief](docs/presentation-brief.md)
+summarizes the problem, related work, precise contribution, evidence, and limits.
+The [editable PowerPoint](presentations/output/veriflow-research-blue-bell-v2.pptx)
+is documented in [presentations/README.md](presentations/README.md).

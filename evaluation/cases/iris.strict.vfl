@@ -1,0 +1,6 @@
+schema IrisOld { sepal_length: decimal; petal_width: decimal; species: text; }
+pipeline IrisStrict from "input.csv" as IrisOld {
+    keep where sepal_length > 5;
+    select species;
+    emit "output.csv";
+}

@@ -1,0 +1,5 @@
+schema IrisOld { sepal_length: decimal; petal_width: decimal; species: text; }
+pipeline IrisSelected from "input.csv" as IrisOld {
+    select species, sepal_length;
+    emit "output.csv";
+}

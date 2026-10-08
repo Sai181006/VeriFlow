@@ -1,8 +1,7 @@
 # Language specification
 
-This specification follows the Phase One report. The initial executable slice
-will support one schema, one pipeline, projection, and CSV emission. Other
-statements are reserved now and will be implemented in later slices.
+The pipeline language supports validated CSV processing, derived fields,
+projection, typed expressions, and safe emission.
 
 ```ebnf
 program       = schema_decl pipeline_decl ;
@@ -10,7 +9,8 @@ schema_decl   = "schema" IDENT "{" field_decl+ "}" ;
 field_decl    = IDENT ":" type ";" ;
 type          = "int" | "decimal" | "text" | "bool" ;
 pipeline_decl = "pipeline" IDENT "from" STRING "as" IDENT "{" statement+ "}" ;
-statement     = require_stmt | keep_stmt | select_stmt | emit_stmt ;
+statement     = let_stmt | require_stmt | keep_stmt | select_stmt | emit_stmt ;
+let_stmt      = "let" IDENT "=" expression ";" ;
 require_stmt  = "require" expression "else" STRING ";" ;
 keep_stmt     = "keep" "where" expression ";" ;
 select_stmt   = "select" IDENT ("," IDENT)* ";" ;
@@ -60,13 +60,10 @@ one field. A source must contain exactly
 one schema followed by exactly one pipeline, with no trailing tokens. Schema
 and pipeline names must be distinct.
 
-The prototype implements require and keep expressions and continues to reject
-`let` explicitly. Static checks resolve the schema reference and selected
-fields, reject duplicate declarations and selections, and preserve field order
-and primitive types in the symbol table. Unknown names include a likely-name
-suggestion when available. Syntax and semantic errors fail at the first error
-and retain source spans. The parser uses recursive descent rather than the
-report's proposed Lark infrastructure.
+`let` introduces a derived value at its position in the pipeline. Its expression
+can reference schema fields and earlier derived values. Duplicate names and
+forward references are rejected. Derived values can be used by later `let`,
+`require`, `keep`, and `select` statements.
 
 Expression types are inferred recursively. Arithmetic accepts int/decimal and
 produces int except division or mixed-decimal operations, which produce decimal.
@@ -82,5 +79,23 @@ Input and output path strings must be nonempty and contain no NUL characters;
 these checks also run during `check`. CSV cells retain their exact text while
 every declared field is validated against its schema type. Projection processes
 all rows, preserving row order and selecting columns in source selection order.
-Invalid schema data or a failed require aborts execution. A false keep condition
-filters that row. Conditions execute in source order before projection.
+Invalid schema data or a failed require aborts normal execution. A false keep
+condition filters that row. Operations execute in source order before projection.
+The `run-report` mode instead quarantines invalid rows and publishes their reasons.
+
+## Schema-evolution grammar
+
+```ebnf
+evolution_program = schema_decl schema_decl evolution_decl ;
+evolution_decl    = "evolve" IDENT "to" IDENT "{" evolution_rule* "}" ;
+evolution_rule    = "rename" IDENT "to" IDENT ";"
+                  | "add" IDENT "default" literal ";"
+                  | "drop" IDENT ";"
+                  | "convert" IDENT "to" IDENT ";"
+                  | "split" IDENT "into" IDENT "," IDENT "using" STRING ";"
+                  | "merge" IDENT "," IDENT "into" IDENT "using" STRING ";" ;
+```
+
+Unchanged same-name fields are detected automatically. Added fields require a
+default for executable forward migration. Compatibility is classified as
+lossless, conditional, lossy, or unsupported.

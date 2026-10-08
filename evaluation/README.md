@@ -1,0 +1,112 @@
+# Reproducible pilot evaluation
+
+This pilot tests explicit **synthetic** schema changes on real rows. The
+datasets' publishers did not make these schema changes. The case files in
+`cases/` are the complete pipeline and mapping definitions; `results.json` is
+the raw output from `run_study.py` on Python 3.12.12 and Windows 11. The Git
+base at the start of this work was `d725ff08f0a4d3f0f79ce433368e21f8dfb9c1d1`
+with pre-existing uncommitted work, so the base hash alone does not identify
+the prototype. Preserve these files and record a later revision before
+submission.
+
+## Data and preparation
+
+- [UCI Abalone](https://archive.ics.uci.edu/dataset/1/abalone), DOI
+  [10.24432/C55C7W](https://doi.org/10.24432/C55C7W), 4,177 rows. The study
+  projects whole weight, rings, and sex from `abalone.data`.
+- [UCI Iris](https://archive.ics.uci.edu/dataset/53/iris), DOI
+  [10.24432/C56C76](https://doi.org/10.24432/C56C76), 150 rows. The study
+  projects sepal length, petal width, and species from `iris.data`.
+- [UCI Wine Quality](https://archive.ics.uci.edu/dataset/186/wine+quality), DOI
+  [10.24432/C56S3T](https://doi.org/10.24432/C56S3T), 1,599 red-wine rows.
+  The study projects alcohol, quality, and residual sugar from the semicolon
+  CSV. It does not use the white-wine file.
+
+All three UCI pages state the data license as CC BY 4.0. The raw downloads and
+prepared projections are in `data/`. `run_study.py` pins each raw file's
+SHA-256 and records prepared-file hashes in `results.json`.
+
+From the repository root:
+
+```sh
+python -m unittest discover -s tests -q
+python -m evaluation.run_study
+python -m evaluation.negative_controls
+python -m evaluation.csv_parity
+python -m evaluation.freeze_manifest
+```
+
+Use `python -m evaluation.run_study --fetch` only to refetch the three UCI raw
+files. The ordinary run uses the included files and needs no network access.
+It rewrites the prepared projections and `results.json`.
+
+The other two commands run eight **predeclared** negative controls and four
+full CSV parity checks. They write `negative-controls.json` and
+`csv-parity.json`, respectively; neither downloads data. The controls cover
+`require`, a derived `let`, an expression error, an observed drop with a
+collision, text parsing, an unsupported type conversion, and mixed Boolean
+predicates. The CSV checks compare output and rejects files on guard-admitted
+rows, including requirement messages and an expression error. The preserved
+Iris case compares all 150 rows.
+`freeze_manifest` hashes the current code, tests, docs, case definitions, data,
+and raw result files into `artifact-manifest.json`. Rerun it after any edit to
+those files. This identifies a reviewable snapshot even while the repository
+contains uncommitted work; it does not create a Git commit.
+
+To inspect measured guard utility before executing a migration:
+
+```sh
+python -m veriflow impact-check evaluation/cases/iris.strict.vfl --evolution evaluation/cases/iris.evolution.vfl --input evaluation/data/iris.csv
+```
+
+This read-only report includes the proof rule, guard, replayed witness, and
+coverage among well-typed rows. On Iris it admits 99 of 150 rows (66.00%).
+Coverage describes this file; it is not part of the universal proof.
+
+## Cases and results
+
+| Data | Pipeline | Impact | Changed observations without guards | Rows admitted by guard |
+| --- | --- | --- | ---: | ---: |
+| Abalone | `whole_weight >= 1`, select rings | preserved | 0 / 4,177 | 4,177 / 4,177 |
+| Abalone | `whole_weight > 1`, select rings | conditional | 1,395 / 4,177 | 2,782 / 4,177 |
+| Abalone | select rings and whole weight | conditional | 4,176 / 4,177 | 1 / 4,177 |
+| Iris | `sepal_length >= 5`, select species | preserved | 0 / 150 | 150 / 150 |
+| Iris | `sepal_length > 5`, select species | conditional | 51 / 150 | 99 / 150 |
+| Iris | select species and sepal length | conditional | 133 / 150 | 17 / 150 |
+| Iris | split species, select species | unknown | 0 / 150 sampled | no guarantee |
+| Wine red | `alcohol >= 10`, select quality | preserved | 0 / 1,599 | 1,599 / 1,599 |
+| Wine red | `alcohol > 10`, select quality | conditional | 385 / 1,599 | 1,214 / 1,599 |
+| Wine red | select quality and alcohol | conditional | 1,409 / 1,599 | 190 / 1,599 |
+
+For the nine numeric-conversion cases, the schema-level label is `lossy`; the simple
+lineage-only baseline is `unknown` because it sees a used converted field.
+The checker proves all three safe lossy cases. Across the ten case definitions,
+one remains `unknown`; no admitted row violated the stated guard in this
+dataset run. The eight negative controls also matched their declared status
+and rule; the division case now includes a replayed expression-error witness.
+The split case is deliberately unresolved even though these 150
+rows happen to preserve the selected value. The Abalone selected-value case
+admits only one row on this dataset, showing that a formally valid guard can
+offer little operational benefit. A ten-row differential sample is
+reported in `results.json` as a diagnostic baseline, never as proof.
+
+`results.json` also records rule IDs, witness availability, guard counts,
+five-run median compilation and impact-analysis times, and five-run median end-to-end CSV execution time
+for the old and guarded paths. Timing includes parsing/validation of CSV rows,
+the VM, and output/reject/lineage file generation. It excludes network download
+and temporary input copying. These single-machine pilot timings are not
+performance generalizations. Conditional runs reject some rows before normal
+pipeline execution, so their timing difference from the old run is not a pure
+overhead estimate. The `preserved` cases process the same rows and give the
+more comparable pilot cost measurement.
+
+## Limits for a submission
+
+The cases use three public datasets and injected changes, so they do not
+establish that the method handles real organizational schema histories. The
+sampled data cannot prove universal soundness; the rule arguments and bounded
+tests in [impact-method.md](../docs/impact-method.md) carry the scoped claim.
+The method lacks split/merge proofs, arbitrary new-schema row guarantees,
+malformed-row equivalence, and a standalone rewritten new-schema program. A
+venue-specific novelty review and an independent technical read are still
+needed before calling this submission ready.

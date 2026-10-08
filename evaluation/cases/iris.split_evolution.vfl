@@ -1,0 +1,3 @@
+schema IrisOld { sepal_length: decimal; petal_width: decimal; species: text; }
+schema IrisNew { sepal_length: decimal; petal_width: decimal; genus: text; epithet: text; }
+evolve IrisOld to IrisNew { split species into genus, epithet using "-"; }

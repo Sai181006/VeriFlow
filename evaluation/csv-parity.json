@@ -1,0 +1,46 @@
+[
+  {
+    "name": "require_strict",
+    "status": "conditional",
+    "total_candidates": 9,
+    "admitted": 8,
+    "emitted": 2,
+    "filtered": 0,
+    "rejected": 6,
+    "output_equal": true,
+    "rejects_equal": true
+  },
+  {
+    "name": "derived_require",
+    "status": "preserved",
+    "total_candidates": 9,
+    "admitted": 9,
+    "emitted": 4,
+    "filtered": 0,
+    "rejected": 5,
+    "output_equal": true,
+    "rejects_equal": true
+  },
+  {
+    "name": "executed_division",
+    "status": "conditional",
+    "total_candidates": 9,
+    "admitted": 4,
+    "emitted": 3,
+    "filtered": 0,
+    "rejected": 1,
+    "output_equal": true,
+    "rejects_equal": true
+  },
+  {
+    "name": "iris.safe",
+    "status": "preserved",
+    "total_candidates": 150,
+    "admitted": 150,
+    "emitted": 128,
+    "filtered": 22,
+    "rejected": 0,
+    "output_equal": true,
+    "rejects_equal": true
+  }
+]

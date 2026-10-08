@@ -1,11 +1,8 @@
-"""Recursive-descent syntax analysis for schema, select, and emit.
 
-Statement ordering is checked by semantic analysis, not hidden in the grammar.
-The public entry point always obtains a complete EOF-terminated lexer stream.
-"""
 
-from .ast import (Binary, Emit, Field, Keep, Literal, Name, Pipeline, Program,
-                  Require, Schema, Select, StringLiteral, Unary, Variable)
+from .ast import (Binary, Emit, Field, Keep, Let, Literal, Name, Pipeline,
+                  Program, Require, Schema, Select, StringLiteral, Unary,
+                  Variable)
 from .lexer import Span, Token, tokenize
 
 
@@ -59,10 +56,15 @@ class _Parser:
         end = self.expect("SEMICOLON")
         return Field(name, type_name, Span(name.span.start, end.span.end))
 
-    def statement(self) -> Require | Keep | Select | Emit:
+    def statement(self) -> Let | Require | Keep | Select | Emit:
         start = self.current
         if start.kind == "LET":
-            raise ParseError(f"Statement {start.lexeme!r} is not supported in the projection prototype", start.span)
+            self.expect("LET")
+            name = self.name()
+            self.expect("ASSIGN")
+            expression = self.expression()
+            end = self.expect("SEMICOLON")
+            return Let(name, expression, Span(start.span.start, end.span.end))
         if start.kind == "REQUIRE":
             self.expect("REQUIRE")
             condition = self.expression()

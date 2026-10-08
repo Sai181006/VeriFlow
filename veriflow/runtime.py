@@ -2,6 +2,7 @@
 
 import csv
 from dataclasses import dataclass
+from decimal import Decimal, localcontext
 from fractions import Fraction
 import os
 from pathlib import Path
@@ -11,7 +12,8 @@ import tempfile
 
 from .ast import Emit
 from .lexer import Span
-from .semantics import CheckedProgram, TypedExpression
+from .semantics import CheckedProgram
+from .vm import compile_program, execute_expression
 
 
 class ExecutionError(ValueError):
@@ -55,31 +57,17 @@ def _convert(value: str, type_name: str):
     return value
 
 
-def _evaluate(expression: TypedExpression, row: dict[str, object]):
-    if expression.kind == "literal":
-        return _convert(str(expression.value), expression.type) if expression.type != "bool" else expression.value
-    if expression.kind == "field":
-        return row[str(expression.value)]
-    if expression.kind == "unary":
-        assert expression.left is not None
-        value = _evaluate(expression.left, row)
-        return not value if expression.operator == "not" else -value
-    assert expression.left is not None and expression.right is not None
-    left = _evaluate(expression.left, row)
-    if expression.operator == "and" and not left:
-        return False
-    if expression.operator == "or" and left:
-        return True
-    right = _evaluate(expression.right, row)
-    operations = {
-        "+": lambda: left + right, "-": lambda: left - right,
-        "*": lambda: left * right, "/": lambda: left / right,
-        "==": lambda: left == right, "!=": lambda: left != right,
-        "<": lambda: left < right, "<=": lambda: left <= right,
-        ">": lambda: left > right, ">=": lambda: left >= right,
-        "and": lambda: bool(right), "or": lambda: bool(right),
-    }
-    return operations[expression.operator]()
+def _format_value(value: object, type_name: str) -> str:
+    if type_name == "bool":
+        return "true" if value else "false"
+    if isinstance(value, Fraction):
+        if type_name == "int" and value.denominator == 1:
+            return str(value.numerator)
+        with localcontext() as context:
+            context.prec = 28
+            decimal = Decimal(value.numerator) / Decimal(value.denominator)
+        return format(decimal.normalize(), "f")
+    return str(value)
 
 
 def execute(checked: CheckedProgram, source_path: Path) -> ExecutionResult:
@@ -90,6 +78,7 @@ def execute(checked: CheckedProgram, source_path: Path) -> ExecutionResult:
     after validation and closure, so failure never exposes a partial result.
     """
     pipeline = checked.program.pipeline
+    bytecode = compile_program(checked)
     emit = pipeline.statements[-1]
     assert isinstance(emit, Emit)
     temporary: Path | None = None
@@ -142,26 +131,33 @@ def execute(checked: CheckedProgram, source_path: Path) -> ExecutionResult:
                                                  f"field {symbol.name!r} requires {symbol.type}", symbol.declaration)
                     typed_row = {symbol.name: _convert(row[indices[symbol.name]], symbol.type)
                                  for symbol in checked.symbols}
+                    output_values = {symbol.name: row[indices[symbol.name]]
+                                     for symbol in checked.symbols}
                     keep_row = True
-                    for condition in checked.conditions:
+                    for operation, compiled in zip(checked.operations, bytecode.operations, strict=True):
                         try:
-                            passed = bool(_evaluate(condition.expression, typed_row))
+                            value = execute_expression(compiled.instructions, typed_row)
                         except (ZeroDivisionError, ArithmeticError) as error:
                             raise ExecutionError(f"{input_path}: CSV line {reader.line_num}: "
                                                  f"expression failed: {error}",
-                                                 condition.expression.span) from error
-                        if condition.kind == "require" and not passed:
+                                                 operation.expression.span) from error
+                        if operation.kind == "let":
+                            assert operation.symbol is not None
+                            typed_row[operation.symbol.name] = value
+                            output_values[operation.symbol.name] = _format_value(
+                                value, operation.symbol.type)
+                        elif operation.kind == "require" and not bool(value):
                             raise ExecutionError(f"{input_path}: CSV line {reader.line_num}: "
-                                                 f"requirement failed: {condition.message}",
-                                                 condition.span)
-                        if condition.kind == "keep" and not passed:
+                                                 f"requirement failed: {operation.message}",
+                                                 operation.span)
+                        elif operation.kind == "keep" and not bool(value):
                             keep_row = False
                             filtered += 1
                             break
                     if not keep_row:
                         continue
                     active_path, active_span = output_path, emit.path.span
-                    writer.writerow([row[indices[name]] for name in columns])
+                    writer.writerow([output_values[name] for name in columns])
                     count += 1
                 active_path, active_span = output_path, emit.path.span
         # Same-directory linking is atomic and refuses a concurrently created file.

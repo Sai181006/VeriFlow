@@ -1,0 +1,16 @@
+schema ChatV1 {
+    sender: text;
+    message: text;
+}
+
+schema ChatV2 {
+    user: text;
+    content: text;
+    timestamp: text;
+}
+
+evolve ChatV1 to ChatV2 {
+    rename sender to user;
+    rename message to content;
+    add timestamp default "not-recorded";
+}
