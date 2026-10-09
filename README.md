@@ -36,7 +36,10 @@ Phase 1 provides a working schema-aware pipeline prototype:
 - tests for valid programs, invalid programs, CSV edge cases, and safe output.
 
 Phase 2 adds derived fields through `let`, typed derivation IR, constant folding,
-full pipeline bytecode, and a stack virtual machine. Phase 3 adds field-level
+full pipeline bytecode, and a stack virtual machine. An optional optimizer adds
+arithmetic identity and short-circuit Boolean simplification in a separate
+module. `optimized_run.py` passes its rewritten checked program to the existing
+bytecode compiler and runtime. Phase 3 adds field-level
 lineage, rejected-row quarantine, benchmark results, and integrated valid,
 invalid, boundary, and recovery tests.
 
@@ -66,14 +69,33 @@ corrected input and shows the source, compiler summary, explain plan, output CSV
 and execution totals. Everything runs in temporary folders, so the example
 files are never changed.
 
-The two parts can also be presented separately with one command each:
+Run the error and successful cases separately, then compare optimized code:
 
 ```sh
 python demo.py errors
 python demo.py success
+python optimization_demo.py
 ```
 
-On Windows, `demo.cmd errors` and `demo.cmd success` provide the same modes.
+`errors` shows two expected failures and confirms no partial output was
+published. `success` shows the valid program, input, explain plan, output CSV,
+and row counts. `optimization_demo.py` shows logical IR and executable bytecode
+before and after optimization, then runs `examples/optimization_students.vfl` in a
+temporary folder. In that example, expression bytecode decreases from 21 to
+13 instructions while the output contains two selected rows. `all` runs the
+error cases followed by the successful case. On Windows, `demo.cmd errors` and
+`demo.cmd success` provide the same two modes; double-click
+`optimization_demo.cmd` for the optimization walkthrough.
+
+To apply the optional optimizer to your own pipeline and write its output:
+
+```sh
+python optimized_run.py examples/optimization_students.vfl
+```
+
+As with `run`, this writes the path named by `emit` and refuses to overwrite
+an existing output file. The optimization demo uses a temporary directory and
+does not leave an output file in `examples`.
 
 Individual compiler stages can also be inspected:
 
@@ -91,6 +113,9 @@ python -m veriflow run examples/project_students.vfl
 
 `examples/derived_students.vfl` is a compact Phase 2 example containing two
 derived fields. Use it with `ast`, `check`, `optimize`, `bytecode`, or `run`.
+Use `python optimization_demo.py` to see constant folding, arithmetic
+identities, and Boolean simplification directly. The existing `optimize` command
+still demonstrates its original constant-folding pass only.
 
 Run the schema-evolution chat demonstration with:
 
