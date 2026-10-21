@@ -47,6 +47,8 @@ rejects malformed or guard-failing rows and records a reason.
 | `positive-integer-threshold` | For finite decimal `x` and integer `k >= 1`, truncation toward zero preserves `x >= k` and `x < k`. Reversed comparisons, `not`, `and`, `or`, and derived booleans follow by composition. |
 | `threshold-gap` | For `x > k` or `x <= k`, the result can change only when `k < x < k+1`. The guard admits values outside that interval. Multiple affected predicates contribute conjunctive guards. |
 | `integral-decimal` | If a changed decimal value is integral, converting it to `int` and back leaves it equal. This fallback covers selected values, other expressions, and division-sensitive derivations. |
+| `guarded-split-reconstruction` | For a text split on the first delimiter, the guard admits old values whose two target parts join back to the original text. In this implementation, a value without the delimiter fails because the empty second part adds a delimiter on reconstruction. |
+| `guarded-merge-reconstruction` | The guard admits an old text pair only when joining it and then splitting on the first delimiter reconstructs both values. It checks the actual round trip, including overlapping multicharacter delimiters. |
 
 The positive-threshold rules do not apply to zero or negative thresholds.
 For a pipeline whose only changed observation is one atomic `x > k` or
@@ -57,8 +59,8 @@ For Boolean combinations and other operations, the checker only claims that
 its combined guards are sufficient; one predicate's change may be masked by
 another.
 Division in an executed derivation prevents the threshold-only proof because
-truncation may turn a nonzero denominator into zero. Unproved text conversions,
-split/merge effects, and a dropped observed field return `unknown`; an observed
+truncation may turn a nonzero denominator into zero. Unproved text conversions
+and a dropped observed field return `unknown`; an observed
 collision can upgrade `unknown` to `breaking`. Every `breaking` collision
 contains two valid old records with the same migrated record and different old
 observations, so no deterministic adapted pipeline using only that migrated
@@ -76,6 +78,7 @@ refuses `breaking` and `unknown` plans.
 ```sh
 python -m veriflow impact-check evaluation/cases/iris.safe.vfl --evolution evaluation/cases/iris.evolution.vfl
 python -m veriflow impact-check evaluation/cases/iris.strict.vfl --evolution evaluation/cases/iris.evolution.vfl --input evaluation/data/iris.csv
+python -m veriflow impact-check evaluation/cases/iris.split.vfl --evolution evaluation/cases/iris.split_evolution.vfl --input evaluation/data/iris.csv
 python -m evaluation.run_study
 ```
 

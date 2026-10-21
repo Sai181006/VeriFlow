@@ -62,6 +62,9 @@ python -m veriflow impact-check evaluation/cases/iris.strict.vfl --evolution eva
 This read-only report includes the proof rule, guard, replayed witness, and
 coverage among well-typed rows. On Iris it admits 99 of 150 rows (66.00%).
 Coverage describes this file; it is not part of the universal proof.
+For the guarded text split demo, replace the case paths with
+`iris.split.vfl` and `iris.split_evolution.vfl`; the report shows a
+delimiter-free witness and admits all 150 Iris rows.
 
 ## Cases and results
 
@@ -73,7 +76,7 @@ Coverage describes this file; it is not part of the universal proof.
 | Iris | `sepal_length >= 5`, select species | preserved | 0 / 150 | 150 / 150 |
 | Iris | `sepal_length > 5`, select species | conditional | 51 / 150 | 99 / 150 |
 | Iris | select species and sepal length | conditional | 133 / 150 | 17 / 150 |
-| Iris | split species, select species | unknown | 0 / 150 sampled | no guarantee |
+| Iris | split species, select species | conditional | 0 / 150 | 150 / 150 |
 | Wine red | `alcohol >= 10`, select quality | preserved | 0 / 1,599 | 1,599 / 1,599 |
 | Wine red | `alcohol > 10`, select quality | conditional | 385 / 1,599 | 1,214 / 1,599 |
 | Wine red | select quality and alcohol | conditional | 1,409 / 1,599 | 190 / 1,599 |
@@ -81,11 +84,13 @@ Coverage describes this file; it is not part of the universal proof.
 For the nine numeric-conversion cases, the schema-level label is `lossy`; the simple
 lineage-only baseline is `unknown` because it sees a used converted field.
 The checker proves all three safe lossy cases. Across the ten case definitions,
-one remains `unknown`; no admitted row violated the stated guard in this
-dataset run. The eight negative controls also matched their declared status
+three are `preserved` and seven are `conditional`, including the split case.
+No admitted row violated the stated guard in this dataset run. The eight
+negative controls also matched their declared status
 and rule; the division case now includes a replayed expression-error witness.
-The split case is deliberately unresolved even though these 150
-rows happen to preserve the selected value. The Abalone selected-value case
+The split guard admits all 150 Iris rows because their `species` values contain
+the delimiter; a delimiter-free old value would be rejected. The Abalone
+selected-value case
 admits only one row on this dataset, showing that a formally valid guard can
 offer little operational benefit. A ten-row differential sample is
 reported in `results.json` as a diagnostic baseline, never as proof.
@@ -106,7 +111,7 @@ The cases use three public datasets and injected changes, so they do not
 establish that the method handles real organizational schema histories. The
 sampled data cannot prove universal soundness; the rule arguments and bounded
 tests in [impact-method.md](../docs/impact-method.md) carry the scoped claim.
-The method lacks split/merge proofs, arbitrary new-schema row guarantees,
+The method lacks a general proof for unguarded structural changes, arbitrary new-schema row guarantees,
 malformed-row equivalence, and a standalone rewritten new-schema program. A
 venue-specific novelty review and an independent technical read are still
 needed before calling this submission ready.

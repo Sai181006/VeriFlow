@@ -2,7 +2,6 @@
 
 import csv
 from dataclasses import dataclass
-from decimal import Decimal
 from pathlib import Path
 
 from .impact import ImpactReport
@@ -43,6 +42,8 @@ def inspect_readiness(checked: CheckedProgram, impact: ImpactReport,
             missing = [symbol.name for symbol in checked.symbols if symbol.name not in indices]
             if missing:
                 raise ValueError(f"missing declared CSV columns: {', '.join(missing)}")
+            guard_fields = {name for guard in impact.guards
+                            for name in (guard.field, guard.partner) if name is not None}
             for row in reader:
                 seen += 1
                 if (len(row) != len(header)
@@ -53,8 +54,7 @@ def inspect_readiness(checked: CheckedProgram, impact: ImpactReport,
                 valid += 1
                 if impact.status not in {"preserved", "conditional"}:
                     continue
-                guard_record = {guard.field: Decimal(row[indices[guard.field]])
-                                for guard in impact.guards}
+                guard_record = {name: row[indices[name]] for name in guard_fields}
                 if all(guard.accepts(guard_record) for guard in impact.guards):
                     admitted += 1
                 else:

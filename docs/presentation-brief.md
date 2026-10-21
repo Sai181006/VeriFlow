@@ -151,7 +151,7 @@ readiness count.
   that combines sufficient guards, replayed failures, and guard coverage for
   typed validation/filter/projection pipelines.
 - Pilot: **3 public datasets, 5,926 distinct rows, 10 injected migration cases**.
-- Result: **3 record-lossy cases proved preserved; 1 case unknown; no observed
+- Result: **3 record-lossy cases proved preserved; 1 guarded split case; no observed
   guard-admitted violation** in this pilot.
 
 **Say:** The three datasets are Abalone, Iris, and red Wine Quality. Their rows
@@ -166,7 +166,7 @@ systems. [Pilot data and raw results](../evaluation/README.md);
 
 **Visual:** three horizontal bars showing guard admission on the three public
 CSVs, alongside the pilot totals (`3` datasets, `5,926` distinct rows, `10`
-injected cases). Keep `unknown = 1` visible.
+injected cases). Show the Iris split guard admitting 150 of 150 rows.
 
 ## Slide 8 — Boundary and next research step
 

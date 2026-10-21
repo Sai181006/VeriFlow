@@ -27,8 +27,23 @@ class Guard:
     field: str
     kind: str
     threshold: int | None = None
+    partner: str | None = None
+    delimiter: str | None = None
 
     def accepts(self, record: dict[str, Any]) -> bool:
+        if self.kind == "split_round_trip":
+            value = record.get(self.field)
+            if not isinstance(value, str) or not self.delimiter:
+                return False
+            parts = value.split(self.delimiter, 1)
+            parts.append("")
+            return self.delimiter.join(parts[:2]) == value
+        if self.kind == "merge_round_trip":
+            first = record.get(self.field)
+            second = record.get(self.partner) if self.partner is not None else None
+            if not isinstance(first, str) or not isinstance(second, str) or not self.delimiter:
+                return False
+            return (first + self.delimiter + second).split(self.delimiter, 1) == [first, second]
         try:
             number = Decimal(str(record[self.field]))
         except (KeyError, ValueError, ArithmeticError):
@@ -406,9 +421,19 @@ def analyze_impact(checked: CheckedProgram, plan: EvolutionPlan) -> ImpactReport
             findings.append(ImpactFinding("unknown", used, "required-field-dropped",
                                           "An observable source field cannot be reconstructed; "
                                           "a behavioral collision is needed to prove a break"))
+        elif mapping.kind == "split":
+            guards.append(Guard(mapping.sources[0], "split_round_trip",
+                                delimiter=mapping.delimiter))
+            findings.append(ImpactFinding("conditional", used, "guarded-split-reconstruction",
+                                          "The guard admits text reconstructed by splitting once and joining"))
+        elif mapping.kind == "merge":
+            guards.append(Guard(mapping.sources[0], "merge_round_trip",
+                                partner=mapping.sources[1], delimiter=mapping.delimiter))
+            findings.append(ImpactFinding("conditional", used, "guarded-merge-reconstruction",
+                                          "The guard admits rows whose merged text reconstructs both sources"))
         else:
             findings.append(ImpactFinding("unknown", used, "unproved-structural-rule",
-                                          "Pipeline effect of split or merge is not proved"))
+                                          "No proof rule for this structural mapping"))
         findings[-1] = replace(findings[-1], operations=sites)
     has_unknown = any(item.status == "unknown" for item in findings)
     status = "unknown" if has_unknown else "conditional" if guards else "preserved"
@@ -431,7 +456,9 @@ def format_impact(report: ImpactReport) -> str:
                      f"{finding.reason} [{finding.rule_id}]{sites}")
     for guard in report.guards:
         threshold = f" threshold={guard.threshold}" if guard.threshold is not None else ""
-        lines.append(f"  GUARD {guard.field}: {guard.kind}{threshold}")
+        partner = f" partner={guard.partner}" if guard.partner is not None else ""
+        delimiter = f" delimiter={guard.delimiter!r}" if guard.delimiter is not None else ""
+        lines.append(f"  GUARD {guard.field}: {guard.kind}{threshold}{partner}{delimiter}")
     if report.divergence:
         lines.append(f"  WITNESS old={report.divergence.old_record!r}")
         lines.append(f"          migrated={report.divergence.new_record!r}")

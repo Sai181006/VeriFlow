@@ -18,11 +18,11 @@ rows interpreted through a partial adapter while old rows remain available.
 It returns a sufficient
 preservation proof, executable guard, replayed breaking collision, or `unknown`.
 The current proof rules cover exact field reconstruction and positive-integer
-thresholds under decimal-to-integer truncation; narrow interval guards admit
-additional rows for strict thresholds. On three public datasets with clearly
+thresholds under decimal-to-integer truncation; narrow interval and text
+round-trip guards admit additional rows. On three public datasets with clearly
 injected schema changes, the checker proves three record-lossy yet
-pipeline-preserving cases. Across ten cases using 5,926 distinct source rows, one case remains
-`unknown`; no row admitted by a proof guard changed its typed observation in
+pipeline-preserving cases. Across ten cases using 5,926 distinct source rows,
+all ten have a sufficient rule; no row admitted by a proof guard changed its typed observation in
 this pilot. Eight predeclared negative controls match their expected outcomes,
 and four guarded CSV comparisons match old outputs and rejects on admitted
 rows. The checker does not establish behavior on arbitrary new-schema
@@ -134,7 +134,7 @@ We projected real rows from UCI Abalone (4,177), Iris (150), and Wine Quality
 red (1,599), then injected explicit synthetic decimal-to-integer and drop
 mappings. These are not historical schema changes. Each source has a safe
 non-strict threshold, a nearby strict threshold, and a selected-value case;
-Iris also has an unproved split case. The case sources, licensed data,
+Iris also has a guarded text split case. The case sources, licensed data,
 preparation script, hashes, and raw results are in
 [evaluation/](../evaluation/README.md).
 
@@ -148,9 +148,9 @@ The schema-level baseline labels all nine numeric cases `lossy`. A dependency
 only ablation cannot prove any of the three safe cases because each uses the
 converted field. These internal ablations are not comparisons to a competing
 research system. First-ten-row differential testing is also reported, but an
-absence of differences in a sample is not a guarantee. The checker leaves the
-Iris split case `unknown` although its 150 tested rows preserve the selected
-value. No guard-admitted row violated the claim in this pilot. `results.json`
+absence of differences in a sample is not a guarantee. The checker classifies the
+Iris split case `conditional`; its guard admits all 150 rows, and none changes
+the selected value. No guard-admitted row violated the claim in this pilot. `results.json`
 contains compilation, impact-check, and end-to-end CSV timings measured as
 five-run medians on one Windows machine. Conditional runs reject rows that the
 old execution processes, so their timing difference is not a clean overhead
@@ -187,7 +187,7 @@ novelty.
 The preservation theorem covers only explicit one-step mappings, well-typed
 legacy rows, a deterministic row-wise language, and the documented rule
 fragment. It does not compare original CSV spellings, guarantee behavior on
-future new-schema records, or prove split/merge preservation. The adapted plan
+future new-schema records, or prove unguarded split/merge preservation. The adapted plan
 is interpreted through an adapter, which a reviewer may consider less
 compelling than a standalone rewritten new-schema pipeline. The cases use
 injected changes on three public datasets; they are reproducible but do not

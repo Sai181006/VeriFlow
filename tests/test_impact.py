@@ -14,6 +14,7 @@ from veriflow.parser import parse
 from veriflow.semantics import analyze
 from veriflow.cli import main
 from veriflow.reporting import execute_with_report
+from veriflow.readiness import inspect_readiness
 
 
 SCHEMAS = '''
@@ -37,6 +38,74 @@ pipeline Pass from "input.csv" as Old {{
 class ImpactTests(unittest.TestCase):
     def setUp(self):
         self.plan = compile_evolution(parse_evolution(SCHEMAS))
+
+    def test_split_guard_reconstructs_admitted_old_text(self):
+        source = '''
+schema Old { full: text; }
+pipeline Pass from "input.csv" as Old {
+    select full;
+    emit "output.csv";
+}
+'''
+        evolution = '''
+schema Old { full: text; }
+schema New { first: text; last: text; }
+evolve Old to New { split full into first, last using "-"; }
+'''
+        pipeline = analyze(parse(source))
+        plan = compile_evolution(parse_evolution(evolution))
+        report = analyze_impact(pipeline, plan)
+        self.assertEqual(report.status, "conditional")
+        self.assertIn("guarded-split-reconstruction", {item.rule_id for item in report.findings})
+        guard, = report.guards
+        for value in ("", "A", "A-B", "A-B-C", "-A", "A-"):
+            old = {"full": value}
+            self.assertEqual(guard.accepts(old), "-" in value)
+            if guard.accepts(old):
+                self.assertEqual(observe(pipeline, old),
+                                 observe_adapted(pipeline, plan, migrate_forward(plan, old),
+                                                 report.required_old_fields))
+
+    def test_merge_guard_readiness_and_csv_execution(self):
+        source = '''
+schema Old { first: text; last: text; }
+pipeline Pass from "input.csv" as Old {
+    select first, last;
+    emit "output.csv";
+}
+'''
+        evolution = '''
+schema Old { first: text; last: text; }
+schema New { full: text; }
+evolve Old to New { merge first, last into full using "aa"; }
+'''
+        pipeline = analyze(parse(source))
+        plan = compile_evolution(parse_evolution(evolution))
+        report = analyze_impact(pipeline, plan)
+        self.assertEqual(report.status, "conditional")
+        self.assertEqual(report.findings[0].rule_id, "guarded-merge-reconstruction")
+        guard, = report.guards
+        for first, last in (("X", "Y"), ("", "Y"), ("X", "aY")):
+            old = {"first": first, "last": last}
+            self.assertTrue(guard.accepts(old))
+            self.assertEqual(observe(pipeline, old),
+                             observe_adapted(pipeline, plan, migrate_forward(plan, old),
+                                             report.required_old_fields))
+        for old in ({"first": "aa", "last": "Y"},
+                    {"first": "a", "last": "Y"}):
+            self.assertFalse(guard.accepts(old))
+        with tempfile.TemporaryDirectory() as folder:
+            source_path = Path(folder) / "pipeline.vfl"
+            source_path.write_text(source, encoding="utf-8")
+            data = Path(folder) / "input.csv"
+            data.write_text("first,last\nX,Y\naa,Y\na,Y\n", encoding="utf-8")
+            readiness = inspect_readiness(pipeline, report, data)
+            self.assertEqual((readiness.rows_admitted, readiness.rows_guard_rejected),
+                             (1, 2))
+            result = execute_with_report(pipeline, source_path, evolution=plan, impact=report)
+            self.assertEqual((result.rows_written, result.rows_guard_rejected), (1, 2))
+            self.assertEqual((Path(folder) / "output.csv").read_text(encoding="utf-8"),
+                             "first,last\nX,Y\n")
 
     def test_lossy_record_migration_preserves_threshold_pipeline(self):
         pipeline = checked("keep where score >= 40;")

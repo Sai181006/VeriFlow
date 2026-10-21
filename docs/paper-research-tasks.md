@@ -117,7 +117,7 @@ prior work, [impact-method.md](impact-method.md) for the scoped guarantee, and
       microbenchmarks.
 - [x] Claims in the current draft abstract match the implemented and measured
       results: three datasets, 5,926 distinct rows, ten pilot cases, three
-      preserved cases, one unknown, eight declared controls, four CSV parity
+      preserved cases, one guarded split case, eight declared controls, four CSV parity
       checks, and zero observed guard violations. Reaudit after venue editing.
 
 ## Deferred research gaps

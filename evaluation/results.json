@@ -1,5 +1,5 @@
 {
-  "python": "3.12.12",
+  "python": "3.12.14",
   "platform": "Windows-11-10.0.26200-SP0",
   "repetitions": 5,
   "datasets": {
@@ -39,10 +39,10 @@
       "guard_pass": 4177,
       "guard_reject": 0,
       "guarded_violations": 0,
-      "compile_median_ms": 0.435,
-      "impact_median_ms": 0.069,
-      "old_runtime_median_ms": 120.197,
-      "evolved_runtime_median_ms": 155.417,
+      "compile_median_ms": 0.171,
+      "impact_median_ms": 0.026,
+      "old_runtime_median_ms": 63.794,
+      "evolved_runtime_median_ms": 79.974,
       "old_counts": {
         "written": 1472,
         "filtered": 2705,
@@ -73,7 +73,9 @@
         {
           "field": "whole_weight",
           "kind": "outside_positive_threshold_gap",
-          "threshold": 1
+          "threshold": 1,
+          "partner": null,
+          "delimiter": null
         }
       ],
       "witness_validated": true,
@@ -81,10 +83,10 @@
       "guard_pass": 2782,
       "guard_reject": 1395,
       "guarded_violations": 0,
-      "compile_median_ms": 0.326,
-      "impact_median_ms": 0.429,
-      "old_runtime_median_ms": 89.735,
-      "evolved_runtime_median_ms": 167.111,
+      "compile_median_ms": 0.171,
+      "impact_median_ms": 0.244,
+      "old_runtime_median_ms": 72.819,
+      "evolved_runtime_median_ms": 73.977,
       "old_counts": {
         "written": 1471,
         "filtered": 2706,
@@ -115,7 +117,9 @@
         {
           "field": "whole_weight",
           "kind": "integral_decimal",
-          "threshold": null
+          "threshold": null,
+          "partner": null,
+          "delimiter": null
         }
       ],
       "witness_validated": true,
@@ -123,10 +127,10 @@
       "guard_pass": 1,
       "guard_reject": 4176,
       "guarded_violations": 0,
-      "compile_median_ms": 0.486,
-      "impact_median_ms": 0.4,
-      "old_runtime_median_ms": 68.259,
-      "evolved_runtime_median_ms": 51.585,
+      "compile_median_ms": 0.138,
+      "impact_median_ms": 0.085,
+      "old_runtime_median_ms": 55.761,
+      "evolved_runtime_median_ms": 51.456,
       "old_counts": {
         "written": 4177,
         "filtered": 0,
@@ -159,10 +163,10 @@
       "guard_pass": 150,
       "guard_reject": 0,
       "guarded_violations": 0,
-      "compile_median_ms": 0.279,
-      "impact_median_ms": 0.041,
-      "old_runtime_median_ms": 11.885,
-      "evolved_runtime_median_ms": 12.555,
+      "compile_median_ms": 0.158,
+      "impact_median_ms": 0.023,
+      "old_runtime_median_ms": 5.835,
+      "evolved_runtime_median_ms": 6.031,
       "old_counts": {
         "written": 128,
         "filtered": 22,
@@ -193,7 +197,9 @@
         {
           "field": "sepal_length",
           "kind": "outside_positive_threshold_gap",
-          "threshold": 5
+          "threshold": 5,
+          "partner": null,
+          "delimiter": null
         }
       ],
       "witness_validated": true,
@@ -201,10 +207,10 @@
       "guard_pass": 99,
       "guard_reject": 51,
       "guarded_violations": 0,
-      "compile_median_ms": 0.282,
-      "impact_median_ms": 0.462,
-      "old_runtime_median_ms": 9.48,
-      "evolved_runtime_median_ms": 10.692,
+      "compile_median_ms": 0.169,
+      "impact_median_ms": 0.257,
+      "old_runtime_median_ms": 4.866,
+      "evolved_runtime_median_ms": 4.845,
       "old_counts": {
         "written": 118,
         "filtered": 32,
@@ -235,7 +241,9 @@
         {
           "field": "sepal_length",
           "kind": "integral_decimal",
-          "threshold": null
+          "threshold": null,
+          "partner": null,
+          "delimiter": null
         }
       ],
       "witness_validated": true,
@@ -243,10 +251,10 @@
       "guard_pass": 17,
       "guard_reject": 133,
       "guarded_violations": 0,
-      "compile_median_ms": 0.244,
-      "impact_median_ms": 0.147,
-      "old_runtime_median_ms": 8.863,
-      "evolved_runtime_median_ms": 8.847,
+      "compile_median_ms": 0.138,
+      "impact_median_ms": 0.091,
+      "old_runtime_median_ms": 4.292,
+      "evolved_runtime_median_ms": 5.225,
       "old_counts": {
         "written": 150,
         "filtered": 0,
@@ -267,29 +275,42 @@
       "schema_label": "conditional",
       "lineage_only": "unknown",
       "sample_first_10": "none_observed",
-      "impact_status": "unknown",
+      "impact_status": "conditional",
       "rules": [
-        "unproved-structural-rule",
+        "guarded-split-reconstruction",
         "unused-source",
         "unused-source"
       ],
-      "guards": [],
-      "witness_validated": false,
+      "guards": [
+        {
+          "field": "species",
+          "kind": "split_round_trip",
+          "threshold": null,
+          "partner": null,
+          "delimiter": "-"
+        }
+      ],
+      "witness_validated": true,
       "observed_differences": 0,
-      "guard_pass": null,
-      "guard_reject": null,
-      "guarded_violations": null,
-      "compile_median_ms": 0.218,
-      "impact_median_ms": 0.254,
-      "old_runtime_median_ms": 9.12,
-      "evolved_runtime_median_ms": null,
+      "guard_pass": 150,
+      "guard_reject": 0,
+      "guarded_violations": 0,
+      "compile_median_ms": 0.138,
+      "impact_median_ms": 0.174,
+      "old_runtime_median_ms": 4.9,
+      "evolved_runtime_median_ms": 4.897,
       "old_counts": {
         "written": 150,
         "filtered": 0,
         "rejected": 0,
         "guard_rejected": 0
       },
-      "evolved_counts": null
+      "evolved_counts": {
+        "written": 150,
+        "filtered": 0,
+        "rejected": 0,
+        "guard_rejected": 0
+      }
     },
     {
       "dataset": "wine_red",
@@ -310,10 +331,10 @@
       "guard_pass": 1599,
       "guard_reject": 0,
       "guarded_violations": 0,
-      "compile_median_ms": 0.415,
-      "impact_median_ms": 0.061,
-      "old_runtime_median_ms": 85.042,
-      "evolved_runtime_median_ms": 76.015,
+      "compile_median_ms": 0.644,
+      "impact_median_ms": 0.101,
+      "old_runtime_median_ms": 115.859,
+      "evolved_runtime_median_ms": 157.315,
       "old_counts": {
         "written": 919,
         "filtered": 680,
@@ -344,7 +365,9 @@
         {
           "field": "alcohol",
           "kind": "outside_positive_threshold_gap",
-          "threshold": 10
+          "threshold": 10,
+          "partner": null,
+          "delimiter": null
         }
       ],
       "witness_validated": true,
@@ -352,10 +375,10 @@
       "guard_pass": 1214,
       "guard_reject": 385,
       "guarded_violations": 0,
-      "compile_median_ms": 0.317,
-      "impact_median_ms": 0.526,
-      "old_runtime_median_ms": 74.176,
-      "evolved_runtime_median_ms": 102.249,
+      "compile_median_ms": 0.6,
+      "impact_median_ms": 1.171,
+      "old_runtime_median_ms": 103.326,
+      "evolved_runtime_median_ms": 150.465,
       "old_counts": {
         "written": 852,
         "filtered": 747,
@@ -386,7 +409,9 @@
         {
           "field": "alcohol",
           "kind": "integral_decimal",
-          "threshold": null
+          "threshold": null,
+          "partner": null,
+          "delimiter": null
         }
       ],
       "witness_validated": true,
@@ -394,10 +419,10 @@
       "guard_pass": 190,
       "guard_reject": 1409,
       "guarded_violations": 0,
-      "compile_median_ms": 0.633,
-      "impact_median_ms": 0.491,
-      "old_runtime_median_ms": 85.612,
-      "evolved_runtime_median_ms": 68.592,
+      "compile_median_ms": 0.493,
+      "impact_median_ms": 0.598,
+      "old_runtime_median_ms": 73.424,
+      "evolved_runtime_median_ms": 65.094,
       "old_counts": {
         "written": 1599,
         "filtered": 0,
