@@ -148,7 +148,8 @@ See the [language specification](docs/language.md), [Phase 2](docs/phase-two.md)
 
 The paper direction, implemented checker, evaluation pilot, and remaining work
 are documented in [paper research context](docs/paper-research-context.md),
-[impact method](docs/impact-method.md), [evaluation](evaluation/README.md), and
+[impact method](docs/impact-method.md), [recovery sidecars](docs/recovery-method.md),
+[evaluation](evaluation/README.md), and
 [research tasks](docs/paper-research-tasks.md). The
 [second council review](docs/council-review-2026-10-08.md) explains the
 near-term additions and deferred research gaps.

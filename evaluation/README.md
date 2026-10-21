@@ -33,6 +33,8 @@ python -m unittest discover -s tests -q
 python -m evaluation.run_study
 python -m evaluation.negative_controls
 python -m evaluation.csv_parity
+python -m evaluation.recovery_study
+python -m evaluation.structural_matrix
 python -m evaluation.freeze_manifest
 ```
 
@@ -48,6 +50,20 @@ collision, text parsing, an unsupported type conversion, and mixed Boolean
 predicates. The CSV checks compare output and rejects files on guard-admitted
 rows, including requirement messages and an expression error. The preserved
 Iris case compares all 150 rows.
+`recovery_study` replays each case with a sparse observation sidecar and writes
+`recovery-results.json`. Across these ten repeated workloads, it retains 7,549
+cells versus 35,706 cells for retaining every observed source field on every
+row. All replayed typed observations match. These are cell counts, not byte
+sizes; cases reuse the same source rows and are not independent datasets. See
+the [recovery method](../docs/recovery-method.md) for its proof scope and a
+JSONL export command.
+The same script also replays an observed-drop collision: two old rows migrate
+to the same new row, while one retained `name` cell per row restores their
+distinct legacy outputs.
+`structural_matrix` enumerates 3,280 short text rows over two delimiters,
+including overlapping `aa`. It writes `structural-matrix.json`; every admitted
+row and every recovered row matched the old typed observation. This bounded
+experiment probes edge cases and is not a universal proof.
 `freeze_manifest` hashes the current code, tests, docs, case definitions, data,
 and raw result files into `artifact-manifest.json`. Rerun it after any edit to
 those files. This identifies a reviewable snapshot even while the repository

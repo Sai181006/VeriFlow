@@ -25,7 +25,9 @@ pipeline-preserving cases. Across ten cases using 5,926 distinct source rows,
 all ten have a sufficient rule; no row admitted by a proof guard changed its typed observation in
 this pilot. Eight predeclared negative controls match their expected outcomes,
 and four guarded CSV comparisons match old outputs and rejects on admitted
-rows. The checker does not establish behavior on arbitrary new-schema
+rows. A supplementary recovery mode retains observed old cells only for
+guard-failing rows, then replays all ten pilot cases without a typed observation
+mismatch. The checker does not establish behavior on arbitrary new-schema
 rows, malformed CSV, or unproved structural mappings.
 
 ## 1. Problem and motivating example
@@ -127,6 +129,11 @@ With `impact-check --input`, a read-only migration readiness report scans a
 legacy CSV and shows the number and percentage of well-typed rows admitted by
 the proved guard. That measured coverage helps decide whether the guarantee
 is useful for a particular file; it does not strengthen the proof.
+The separate recovery plan retains observed source cells when an existing
+guard fails, or when an observed field is dropped. The migrated row and sparse
+sidecar can then reconstruct the old pipeline's observation. This mode does
+not generate a new-schema VeriFlow program or integrate sidecar storage into
+the guarded CSV runner.
 
 ## 4. Pilot evaluation
 
@@ -156,6 +163,18 @@ five-run medians on one Windows machine. Conditional runs reject rows that the
 old execution processes, so their timing difference is not a clean overhead
 measure. The preserved cases process the same rows and are the relevant pilot
 comparison for overhead.
+
+The separate recovery replay uses the same ten case definitions. It retains
+7,549 source cells across the repeated workloads, compared with 35,706 cells
+for retaining every observed source field on every row, and finds no typed
+observation mismatch. This is a storage-cell comparison, not a measured byte
+cost or an end-to-end deployment benchmark. Case workloads reuse source rows.
+An observed-drop control shows two distinct old outputs after their rows
+collide under migration; a one-cell sidecar per row restores both outputs.
+A separate bounded text matrix checks 3,280 split/merge rows, including
+overlapping delimiters, with zero admitted or recovered observation mismatches.
+The rule arguments carry the general claim; this enumeration probes the
+implementation's edge cases.
 
 Eight predeclared negative controls test validation, derived values,
 expression errors, observed drops, failed text parsing, unsupported conversion,
@@ -194,6 +213,8 @@ injected changes on three public datasets; they are reproducible but do not
 represent an observed organization's migration. Conditional selected-value
 guards may be too restrictive to be useful, as Abalone shows. Witness search
 is bounded and cannot prove the absence of a break.
+Recovery sidecars are associated by row position in this prototype, so durable
+row identity and integrated CSV replay remain future engineering work.
 
 Before submission: expand the independent bounded operator matrix, add one
 documented real schema history if available, decide whether a standalone

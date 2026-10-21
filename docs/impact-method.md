@@ -95,3 +95,5 @@ utility statistic, not a proof.
 
 See [evaluation/README.md](../evaluation/README.md) for the public-data pilot,
 case definitions, raw results, and limitations.
+For guard-failing rows, the separate [recovery method](recovery-method.md)
+describes sparse source-cell retention and replay.

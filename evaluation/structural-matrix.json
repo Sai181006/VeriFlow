@@ -1,0 +1,46 @@
+{
+  "alphabet": "ab-",
+  "max_length": 3,
+  "cases": [
+    {
+      "mapping": "split",
+      "delimiter": "-",
+      "enumerated_rows": 40,
+      "guard_admitted": 25,
+      "guard_rejected": 15,
+      "retained_cells": 15,
+      "admitted_mismatches": 0,
+      "recovery_mismatches": 0
+    },
+    {
+      "mapping": "split",
+      "delimiter": "aa",
+      "enumerated_rows": 40,
+      "guard_admitted": 6,
+      "guard_rejected": 34,
+      "retained_cells": 34,
+      "admitted_mismatches": 0,
+      "recovery_mismatches": 0
+    },
+    {
+      "mapping": "merge",
+      "delimiter": "-",
+      "enumerated_rows": 1600,
+      "guard_admitted": 600,
+      "guard_rejected": 1000,
+      "retained_cells": 2000,
+      "admitted_mismatches": 0,
+      "recovery_mismatches": 0
+    },
+    {
+      "mapping": "merge",
+      "delimiter": "aa",
+      "enumerated_rows": 1600,
+      "guard_admitted": 1000,
+      "guard_rejected": 600,
+      "retained_cells": 1200,
+      "admitted_mismatches": 0,
+      "recovery_mismatches": 0
+    }
+  ]
+}

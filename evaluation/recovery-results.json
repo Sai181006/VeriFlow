@@ -1,0 +1,162 @@
+{
+  "cases": [
+    {
+      "dataset": "abalone",
+      "case": "safe",
+      "rows": 4177,
+      "required_old_fields": [
+        "whole_weight",
+        "rings"
+      ],
+      "retained_rows": 0,
+      "retained_cells": 0,
+      "retain_all_observed_cells": 8354,
+      "retained_by_field": {},
+      "observation_mismatches": 0
+    },
+    {
+      "dataset": "abalone",
+      "case": "strict",
+      "rows": 4177,
+      "required_old_fields": [
+        "whole_weight",
+        "rings"
+      ],
+      "retained_rows": 1395,
+      "retained_cells": 1395,
+      "retain_all_observed_cells": 8354,
+      "retained_by_field": {
+        "whole_weight": 1395
+      },
+      "observation_mismatches": 0
+    },
+    {
+      "dataset": "abalone",
+      "case": "selected",
+      "rows": 4177,
+      "required_old_fields": [
+        "whole_weight",
+        "rings"
+      ],
+      "retained_rows": 4176,
+      "retained_cells": 4176,
+      "retain_all_observed_cells": 8354,
+      "retained_by_field": {
+        "whole_weight": 4176
+      },
+      "observation_mismatches": 0
+    },
+    {
+      "dataset": "iris",
+      "case": "safe",
+      "rows": 150,
+      "required_old_fields": [
+        "sepal_length",
+        "species"
+      ],
+      "retained_rows": 0,
+      "retained_cells": 0,
+      "retain_all_observed_cells": 300,
+      "retained_by_field": {},
+      "observation_mismatches": 0
+    },
+    {
+      "dataset": "iris",
+      "case": "strict",
+      "rows": 150,
+      "required_old_fields": [
+        "sepal_length",
+        "species"
+      ],
+      "retained_rows": 51,
+      "retained_cells": 51,
+      "retain_all_observed_cells": 300,
+      "retained_by_field": {
+        "sepal_length": 51
+      },
+      "observation_mismatches": 0
+    },
+    {
+      "dataset": "iris",
+      "case": "selected",
+      "rows": 150,
+      "required_old_fields": [
+        "sepal_length",
+        "species"
+      ],
+      "retained_rows": 133,
+      "retained_cells": 133,
+      "retain_all_observed_cells": 300,
+      "retained_by_field": {
+        "sepal_length": 133
+      },
+      "observation_mismatches": 0
+    },
+    {
+      "dataset": "iris",
+      "case": "split",
+      "rows": 150,
+      "required_old_fields": [
+        "species"
+      ],
+      "retained_rows": 0,
+      "retained_cells": 0,
+      "retain_all_observed_cells": 150,
+      "retained_by_field": {},
+      "observation_mismatches": 0
+    },
+    {
+      "dataset": "wine_red",
+      "case": "safe",
+      "rows": 1599,
+      "required_old_fields": [
+        "alcohol",
+        "quality"
+      ],
+      "retained_rows": 0,
+      "retained_cells": 0,
+      "retain_all_observed_cells": 3198,
+      "retained_by_field": {},
+      "observation_mismatches": 0
+    },
+    {
+      "dataset": "wine_red",
+      "case": "strict",
+      "rows": 1599,
+      "required_old_fields": [
+        "alcohol",
+        "quality"
+      ],
+      "retained_rows": 385,
+      "retained_cells": 385,
+      "retain_all_observed_cells": 3198,
+      "retained_by_field": {
+        "alcohol": 385
+      },
+      "observation_mismatches": 0
+    },
+    {
+      "dataset": "wine_red",
+      "case": "selected",
+      "rows": 1599,
+      "required_old_fields": [
+        "alcohol",
+        "quality"
+      ],
+      "retained_rows": 1409,
+      "retained_cells": 1409,
+      "retain_all_observed_cells": 3198,
+      "retained_by_field": {
+        "alcohol": 1409
+      },
+      "observation_mismatches": 0
+    }
+  ],
+  "observed_drop_control": {
+    "case": "observed_drop",
+    "original_status": "breaking",
+    "collision_rows": 2,
+    "retained_cells": 2,
+    "observation_mismatches": 0
+  }
+}
