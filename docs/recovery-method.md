@@ -3,8 +3,9 @@
 VeriFlow can retain a sparse set of old cells when a migration would otherwise
 lose a legacy pipeline observation. This is a migration-time option for
 well-typed old rows and explicit one-step mappings with a defined forward
-operation. It complements the guard-only runner; it does not change that
-runner's admission rule.
+operation. It complements the older guard-only runner. The integrated
+[`migrate-run`](migration-method.md) command now combines admission, sparse
+retention, rejection, UUID row identity, and replay from a compiled plan.
 
 `plan_recovery` in `veriflow/recovery.py` uses the impact findings and
 transitively observed fields. An observed dropped field is always retained.
@@ -31,16 +32,18 @@ and checks replayed observations on every row of the ten injected pilot cases:
 python -m evaluation.recovery_study
 ```
 
-To export matching migrated CSV and JSONL sidecar files for one case:
+The earlier standalone study can still export matching migrated CSV and JSONL
+sidecar files for one case:
 
 ```sh
 python -m evaluation.recovery_study --case abalone.strict --migrated abalone-strict.new.csv --sidecar abalone-strict.sidecar.jsonl
 ```
 
-Each entry has a one-based data-row number and a `fields` object. Rows needing
-no retained value have no entry. The sidecar must remain paired with the same
-ordered migrated CSV; the prototype does not supply a durable row ID or
-tamper-evident binding. `reconstruct_with_sidecar` replays the saved values,
+In this *older export format*, each entry has a one-based data-row number and
+a `fields` object. Rows needing no retained value have no entry. It remains
+paired by row order. The integrated bundle instead uses UUID row IDs and
+checks row and sidecar digests; the digests are unkeyed and do not authenticate
+deliberate rewrites. `reconstruct_with_sidecar` replays the saved values,
 using old-schema field types to restore decimal values serialized as strings.
 
 This implementation explores a narrower cost question than whole-record

@@ -1,0 +1,10 @@
+schema ServiceRequest2016 {
+    unique_key: text;
+    agency: text;
+    complaint_type: text;
+}
+pipeline PoliceRequests from "nyc311_2016_sample.csv" as ServiceRequest2016 {
+    keep where agency == "NYPD";
+    select unique_key, complaint_type;
+    emit "police_requests.csv";
+}

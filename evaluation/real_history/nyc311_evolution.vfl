@@ -1,0 +1,16 @@
+schema ServiceRequest2016 {
+    unique_key: text;
+    agency: text;
+    complaint_type: text;
+}
+schema ServiceRequest2018 {
+    unique_key: text;
+    agency: text;
+    complaint_type: text;
+    intake_channel: text;
+    bbl: text;
+}
+evolve ServiceRequest2016 to ServiceRequest2018 {
+    add intake_channel default "";
+    add bbl default "";
+}

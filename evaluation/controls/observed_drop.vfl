@@ -1,0 +1,5 @@
+schema Old { name: text; score: decimal; legacy: text; }
+pipeline Check from "observed_drop.csv" as Old {
+    select name;
+    emit "output.csv";
+}

@@ -1,6 +1,7 @@
 """Command-line access to completed compiler stages."""
 
 import argparse
+import csv
 from dataclasses import asdict
 import json
 from pathlib import Path
@@ -12,7 +13,9 @@ from .ir import build_plan, format_plan
 from .demo import DemoError, build_demo
 from .evolution import compile_evolution, format_compatibility, generate_adapters
 from .evolution_parser import parse_evolution
+from .evolved import compile_evolved_pipeline
 from .impact import analyze_impact, format_impact
+from .migration import replay_migration, run_migration
 from .readiness import format_readiness, inspect_readiness
 from .parser import ParseError, parse
 from .lineage import build_lineage, format_lineage
@@ -40,20 +43,43 @@ def main(argv: list[str] | None = None) -> int:
         ("generate-adapters", "Generate forward, reverse, and compatibility adapters"),
         ("impact-check", "Check a legacy pipeline against an explicit schema evolution"),
         ("run-evolved-report", "Run a proved legacy pipeline through guarded migration"),
+        ("compile-evolved", "Show executable new-schema field bindings and VM operations"),
+        ("migrate-run", "Migrate, retain needed cells, and replay an ID-linked bundle"),
+        ("replay-migration", "Replay an existing migrated bundle from disk"),
         ("demo", "Run a guided demo without changing the example files"),
     ):
         subcommand = commands.add_parser(command, help=help_text)
-        subcommand.add_argument("source", type=Path)
+        if command != "replay-migration":
+            subcommand.add_argument("source", type=Path)
         if command == "benchmark":
             subcommand.add_argument("--iterations", type=int, default=25)
         if command == "generate-adapters":
             subcommand.add_argument("--output-dir", type=Path, required=True)
-        if command in {"impact-check", "run-evolved-report"}:
+        if command in {"impact-check", "run-evolved-report", "compile-evolved",
+                       "migrate-run"}:
             subcommand.add_argument("--evolution", type=Path, required=True)
         if command == "impact-check":
             subcommand.add_argument("--input", type=Path,
                                     help="Measure guard coverage on a legacy CSV")
+        if command in {"migrate-run", "replay-migration"}:
+            subcommand.add_argument("--bundle", type=Path, required=True)
+        if command == "migrate-run":
+            subcommand.add_argument("--input", type=Path,
+                                    help="Override the old CSV path named in the pipeline")
+            subcommand.add_argument("--strategy", choices=("sparse", "guard-only", "full-row"),
+                                    default="sparse")
     args = parser.parse_args(argv)
+    if args.command == "replay-migration":
+        try:
+            observations = replay_migration(args.bundle)
+        except (OSError, UnicodeError, ValueError, KeyError, csv.Error) as error:
+            print(f"{args.bundle}: replay error: {error}", file=sys.stderr)
+            return 1
+        print(json.dumps({"rows_replayed": len(observations),
+                          "outcomes": {kind: sum(item.outcome == kind for item in observations)
+                                       for kind in ("emitted", "filtered", "rejected",
+                                                    "expression-error")}}, indent=2))
+        return 0
     active_path = args.source
     active_source = ""
     try:
@@ -69,7 +95,8 @@ def main(argv: list[str] | None = None) -> int:
                 result = format_compatibility(evolution)
             else:
                 result = [str(path) for path in generate_adapters(evolution, args.output_dir)]
-        elif args.command in {"impact-check", "run-evolved-report"}:
+        elif args.command in {"impact-check", "run-evolved-report", "compile-evolved",
+                                   "migrate-run"}:
             active_path = args.evolution
             with args.evolution.open(encoding="utf-8-sig", newline="") as stream:
                 evolution_source = stream.read()
@@ -85,9 +112,14 @@ def main(argv: list[str] | None = None) -> int:
                     active_path = args.input
                     readiness = inspect_readiness(checked, impact, args.input)
                     result += "\n" + format_readiness(readiness)
-            else:
+            elif args.command == "run-evolved-report":
                 result = asdict(execute_with_report(checked, args.source,
                                                     evolution=evolution, impact=impact))
+            elif args.command == "compile-evolved":
+                result = asdict(compile_evolved_pipeline(checked, evolution, impact))
+            elif args.command == "migrate-run":
+                result = asdict(run_migration(checked, evolution, args.source, args.bundle,
+                                              input_path=args.input, strategy=args.strategy))
         elif args.command == "tokens":
             result = [asdict(token) for token in tokenize(source)]
         else:

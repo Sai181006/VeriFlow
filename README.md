@@ -133,6 +133,20 @@ python -m veriflow generate-adapters examples/chat_evolution.vfl --output-dir ge
 The generated directory contains `forward_adapter.py`, `reverse_adapter.py`,
 `compatibility_adapter.py`, and `compatibility_report.json`.
 
+Compile and run a migration against new-schema rows with ID-linked sparse
+retention and standalone bundle replay:
+
+```sh
+python -m veriflow compile-evolved evaluation/cases/iris.strict.vfl --evolution evaluation/cases/iris.evolution.vfl
+python -m veriflow migrate-run evaluation/cases/iris.strict.vfl --evolution evaluation/cases/iris.evolution.vfl --input evaluation/data/iris.csv --bundle iris-strict-bundle
+python -m veriflow replay-migration --bundle iris-strict-bundle
+```
+
+The bundle directory must not already exist. `migrate-run` also accepts
+`--strategy guard-only` or `--strategy full-row` for baseline comparisons.
+See the [migration method](docs/migration-method.md) and
+[integrated evaluation](evaluation/README.md).
+
 The `run` command creates `examples/selected_students.csv` and prints a JSON
 summary. Remove that generated file or use a new `emit` path before running the
 same program again.

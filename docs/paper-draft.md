@@ -1,6 +1,6 @@
 # Working paper draft: pipeline behavior under schema migration
 
-**Status:** technical draft for supervisor feedback, not a submission manuscript.
+**Status:** technical draft for supervisor feedback, updated 22 October 2026; not a submission manuscript.
 **Venue:** undecided. **Target:** within one month of 7 October 2026.
 
 ## Candidate title
@@ -25,9 +25,10 @@ pipeline-preserving cases. Across ten cases using 5,926 distinct source rows,
 all ten have a sufficient rule; no row admitted by a proof guard changed its typed observation in
 this pilot. Eight predeclared negative controls match their expected outcomes,
 and four guarded CSV comparisons match old outputs and rejects on admitted
-rows. A supplementary recovery mode retains observed old cells only for
-guard-failing rows, then replays all ten pilot cases without a typed observation
-mismatch. The checker does not establish behavior on arbitrary new-schema
+rows. A recovery mode retains observed old cells only where needed, and a
+compiled new-schema input plan now runs the migrated rows from an integrated
+bundle. Across all ten pilot cases, no admitted or recovered typed observation
+changed. The checker does not establish behavior on arbitrary new-schema
 rows, malformed CSV, or unproved structural mappings.
 
 ## 1. Problem and motivating example
@@ -129,11 +130,14 @@ With `impact-check --input`, a read-only migration readiness report scans a
 legacy CSV and shows the number and percentage of well-typed rows admitted by
 the proved guard. That measured coverage helps decide whether the guarantee
 is useful for a particular file; it does not strengthen the proof.
-The separate recovery plan retains observed source cells when an existing
-guard fails, or when an observed field is dropped. The migrated row and sparse
-sidecar can then reconstruct the old pipeline's observation. This mode does
-not generate a new-schema VeriFlow program or integrate sidecar storage into
-the guarded CSV runner.
+The recovery plan retains observed source cells when an existing guard fails,
+or when an observed field is dropped. `compile-evolved` generates bindings from
+new-schema columns to the legacy VM registers, with explicit guard and recovery
+requirements. `migrate-run` integrates guard admission, sparse retention,
+rejection, row IDs, and replay from a persisted compiled plan. It generates an
+executable new-schema input plan rather than a textual `.vfl` rewrite. The
+older `run-evolved-report` command remains guard-only. See the
+[compiled migration method](migration-method.md) for bundle details.
 
 ## 4. Pilot evaluation
 
@@ -176,6 +180,21 @@ overlapping delimiters, with zero admitted or recovered observation mismatches.
 The rule arguments carry the general claim; this enumeration probes the
 implementation's edge cases.
 
+The integrated comparison runs the ten pilot cases under sparse, guard-only,
+and full-row retention. Across these repeated workloads, sparse admits 10,379
+rows and recovers 7,549 rows; guard-only rejects the 7,549 guard-failing rows.
+Sparse retains 7,549 old cells while full-row retains 53,784. Measured sidecar
+files total 1,221,174 bytes for sparse versus 3,452,534 bytes for full-row.
+Total bundle bytes, which also include migrated rows, ledgers, compiled plans,
+rejects, replay results, and summaries, are reported separately in
+[migration-results.json](../evaluation/migration-results.json). No admitted or
+recovered typed observation mismatched. These workloads reuse source rows;
+end-to-end timings include different row counts and are not pure overhead.
+The same study includes a two-row observed-drop collision control and a
+[limited reenactment of a documented NYC311 field addition](../evaluation/real_history/README.md).
+The latter uses real pre-change rows but experimental empty defaults, not an
+official migrated snapshot or a real lossy type change.
+
 Eight predeclared negative controls test validation, derived values,
 expression errors, observed drops, failed text parsing, unsupported conversion,
 and Boolean combinations. All returned the expected status and rule. Four
@@ -206,17 +225,18 @@ novelty.
 The preservation theorem covers only explicit one-step mappings, well-typed
 legacy rows, a deterministic row-wise language, and the documented rule
 fragment. It does not compare original CSV spellings, guarantee behavior on
-future new-schema records, or prove unguarded split/merge preservation. The adapted plan
-is interpreted through an adapter, which a reviewer may consider less
-compelling than a standalone rewritten new-schema pipeline. The cases use
+future new-schema records, or prove unguarded split/merge preservation. The
+compiled plan reads new-schema columns but supplies legacy VM registers
+through generated bindings; it is not a standalone `.vfl` rewrite. The cases use
 injected changes on three public datasets; they are reproducible but do not
 represent an observed organization's migration. Conditional selected-value
 guards may be too restrictive to be useful, as Abalone shows. Witness search
 is bounded and cannot prove the absence of a break.
-Recovery sidecars are associated by row position in this prototype, so durable
-row identity and integrated CSV replay remain future engineering work.
+The integrated bundle associates migrated rows and sidecars by UUID. Unkeyed
+digests detect accidental mismatches but do not authenticate an adversarially
+rewritten bundle or maintain identity across separate runs.
 
-Before submission: expand the independent bounded operator matrix, add one
-documented real schema history if available, decide whether a standalone
-adapted plan is necessary for the target venue, obtain an independent expert
+Before submission: obtain an actual before/after migration snapshot or a
+broader real schema history, decide whether a textual new-schema program is
+necessary for the target venue, obtain an independent expert
 read, and revise title, related work, and page length for the chosen venue.

@@ -1,9 +1,11 @@
 # Pipeline impact method and claim boundary
 
-The prototype checks one explicit schema change against a legacy VeriFlow
-pipeline. It evaluates the legacy pipeline on a migrated record by reconstructing
-only the old fields that execution can observe. This is an executable adapted
-plan, not a source-to-source rewrite into a new VeriFlow program.
+The impact checker evaluates one explicit schema change against a legacy VeriFlow
+pipeline by reconstructing only observable old fields. The separate
+[`compile-evolved` and `migrate-run` path](migration-method.md) now emits a
+new-schema input plan with explicit field bindings and executes that plan from
+persisted migrated rows. It is not a source-to-source rewrite into a new
+VeriFlow program.
 
 The guard is evaluated on the original old-schema row **before** conversion.
 This makes the implemented workflow a migration-time check and guarded runner

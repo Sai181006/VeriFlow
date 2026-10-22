@@ -1,0 +1,584 @@
+{
+  "python": "3.11.9",
+  "platform": "Windows-10-10.0.26200-SP0",
+  "repetitions": 3,
+  "history_scope": "Documented 2018 NYC311 field additions on two transcribed 2016 records; added values are explicit empty defaults, not official backfill",
+  "cases": [
+    {
+      "case": "abalone.safe",
+      "source_rows_sha256": "04709d821841d76aabe2db5f4f87c5c504e84996062d3b9d3c08187167957255",
+      "strategies": {
+        "sparse": {
+          "strategy": "sparse",
+          "input_rows": 4177,
+          "admitted": 4177,
+          "recovered": 0,
+          "rejected": 0,
+          "retained_cells": 0,
+          "observation_mismatches": 0,
+          "migrated_bytes": 156662,
+          "sidecar_bytes": 0,
+          "ledger_bytes": 710090,
+          "elapsed_median_ms": 320.561,
+          "bundle_median_bytes": 1283364
+        },
+        "guard-only": {
+          "strategy": "guard-only",
+          "input_rows": 4177,
+          "admitted": 4177,
+          "recovered": 0,
+          "rejected": 0,
+          "retained_cells": 0,
+          "observation_mismatches": 0,
+          "migrated_bytes": 156662,
+          "sidecar_bytes": 0,
+          "ledger_bytes": 710090,
+          "elapsed_median_ms": 337.457,
+          "bundle_median_bytes": 1283372
+        },
+        "full-row": {
+          "strategy": "full-row",
+          "input_rows": 4177,
+          "admitted": 0,
+          "recovered": 4177,
+          "rejected": 0,
+          "retained_cells": 12531,
+          "observation_mismatches": 0,
+          "migrated_bytes": 156662,
+          "sidecar_bytes": 793321,
+          "ledger_bytes": 973241,
+          "elapsed_median_ms": 446.855,
+          "bundle_median_bytes": 2339849
+        }
+      }
+    },
+    {
+      "case": "abalone.strict",
+      "source_rows_sha256": "04709d821841d76aabe2db5f4f87c5c504e84996062d3b9d3c08187167957255",
+      "strategies": {
+        "sparse": {
+          "strategy": "sparse",
+          "input_rows": 4177,
+          "admitted": 2782,
+          "recovered": 1395,
+          "rejected": 0,
+          "retained_cells": 1395,
+          "observation_mismatches": 0,
+          "migrated_bytes": 156662,
+          "sidecar_bytes": 227953,
+          "ledger_bytes": 797975,
+          "elapsed_median_ms": 396.586,
+          "bundle_median_bytes": 1599415
+        },
+        "guard-only": {
+          "strategy": "guard-only",
+          "input_rows": 4177,
+          "admitted": 2782,
+          "recovered": 0,
+          "rejected": 1395,
+          "retained_cells": 0,
+          "observation_mismatches": 0,
+          "migrated_bytes": 103966,
+          "sidecar_bytes": 0,
+          "ledger_bytes": 472940,
+          "elapsed_median_ms": 254.679,
+          "bundle_median_bytes": 980349
+        },
+        "full-row": {
+          "strategy": "full-row",
+          "input_rows": 4177,
+          "admitted": 0,
+          "recovered": 4177,
+          "rejected": 0,
+          "retained_cells": 12531,
+          "observation_mismatches": 0,
+          "migrated_bytes": 156662,
+          "sidecar_bytes": 793321,
+          "ledger_bytes": 973241,
+          "elapsed_median_ms": 447.607,
+          "bundle_median_bytes": 2340051
+        }
+      }
+    },
+    {
+      "case": "abalone.selected",
+      "source_rows_sha256": "04709d821841d76aabe2db5f4f87c5c504e84996062d3b9d3c08187167957255",
+      "strategies": {
+        "sparse": {
+          "strategy": "sparse",
+          "input_rows": 4177,
+          "admitted": 1,
+          "recovered": 4176,
+          "rejected": 0,
+          "retained_cells": 4176,
+          "observation_mismatches": 0,
+          "migrated_bytes": 156662,
+          "sidecar_bytes": 682479,
+          "ledger_bytes": 973178,
+          "elapsed_median_ms": 362.973,
+          "bundle_median_bytes": 2282761
+        },
+        "guard-only": {
+          "strategy": "guard-only",
+          "input_rows": 4177,
+          "admitted": 1,
+          "recovered": 0,
+          "rejected": 4176,
+          "retained_cells": 0,
+          "observation_mismatches": 0,
+          "migrated_bytes": 70,
+          "sidecar_bytes": 0,
+          "ledger_bytes": 170,
+          "elapsed_median_ms": 94.092,
+          "bundle_median_bytes": 381821
+        },
+        "full-row": {
+          "strategy": "full-row",
+          "input_rows": 4177,
+          "admitted": 0,
+          "recovered": 4177,
+          "rejected": 0,
+          "retained_cells": 12531,
+          "observation_mismatches": 0,
+          "migrated_bytes": 156662,
+          "sidecar_bytes": 793321,
+          "ledger_bytes": 973241,
+          "elapsed_median_ms": 356.161,
+          "bundle_median_bytes": 2393671
+        }
+      }
+    },
+    {
+      "case": "iris.safe",
+      "source_rows_sha256": "8121e55021d938dc1d9e2171d35bb5552ef0671143420a75c68d3f3db3ce80e3",
+      "strategies": {
+        "sparse": {
+          "strategy": "sparse",
+          "input_rows": 150,
+          "admitted": 150,
+          "recovered": 0,
+          "rejected": 0,
+          "retained_cells": 0,
+          "observation_mismatches": 0,
+          "migrated_bytes": 7434,
+          "sidecar_bytes": 0,
+          "ledger_bytes": 25500,
+          "elapsed_median_ms": 57.88,
+          "bundle_median_bytes": 52695
+        },
+        "guard-only": {
+          "strategy": "guard-only",
+          "input_rows": 150,
+          "admitted": 150,
+          "recovered": 0,
+          "rejected": 0,
+          "retained_cells": 0,
+          "observation_mismatches": 0,
+          "migrated_bytes": 7434,
+          "sidecar_bytes": 0,
+          "ledger_bytes": 25500,
+          "elapsed_median_ms": 41.306,
+          "bundle_median_bytes": 52703
+        },
+        "full-row": {
+          "strategy": "full-row",
+          "input_rows": 150,
+          "admitted": 0,
+          "recovered": 150,
+          "rejected": 0,
+          "retained_cells": 450,
+          "observation_mismatches": 0,
+          "migrated_bytes": 7434,
+          "sidecar_bytes": 31700,
+          "ledger_bytes": 34950,
+          "elapsed_median_ms": 71.739,
+          "bundle_median_bytes": 93855
+        }
+      }
+    },
+    {
+      "case": "iris.strict",
+      "source_rows_sha256": "8121e55021d938dc1d9e2171d35bb5552ef0671143420a75c68d3f3db3ce80e3",
+      "strategies": {
+        "sparse": {
+          "strategy": "sparse",
+          "input_rows": 150,
+          "admitted": 99,
+          "recovered": 51,
+          "rejected": 0,
+          "retained_cells": 51,
+          "observation_mismatches": 0,
+          "migrated_bytes": 7434,
+          "sidecar_bytes": 8211,
+          "ledger_bytes": 28713,
+          "elapsed_median_ms": 106.089,
+          "bundle_median_bytes": 64201
+        },
+        "guard-only": {
+          "strategy": "guard-only",
+          "input_rows": 150,
+          "admitted": 99,
+          "recovered": 0,
+          "rejected": 51,
+          "retained_cells": 0,
+          "observation_mismatches": 0,
+          "migrated_bytes": 4927,
+          "sidecar_bytes": 0,
+          "ledger_bytes": 16830,
+          "elapsed_median_ms": 50.452,
+          "bundle_median_bytes": 41093
+        },
+        "full-row": {
+          "strategy": "full-row",
+          "input_rows": 150,
+          "admitted": 0,
+          "recovered": 150,
+          "rejected": 0,
+          "retained_cells": 450,
+          "observation_mismatches": 0,
+          "migrated_bytes": 7434,
+          "sidecar_bytes": 31700,
+          "ledger_bytes": 34950,
+          "elapsed_median_ms": 64.896,
+          "bundle_median_bytes": 93932
+        }
+      }
+    },
+    {
+      "case": "iris.selected",
+      "source_rows_sha256": "8121e55021d938dc1d9e2171d35bb5552ef0671143420a75c68d3f3db3ce80e3",
+      "strategies": {
+        "sparse": {
+          "strategy": "sparse",
+          "input_rows": 150,
+          "admitted": 17,
+          "recovered": 133,
+          "rejected": 0,
+          "retained_cells": 133,
+          "observation_mismatches": 0,
+          "migrated_bytes": 7434,
+          "sidecar_bytes": 21413,
+          "ledger_bytes": 33879,
+          "elapsed_median_ms": 61.758,
+          "bundle_median_bytes": 82574
+        },
+        "guard-only": {
+          "strategy": "guard-only",
+          "input_rows": 150,
+          "admitted": 17,
+          "recovered": 0,
+          "rejected": 133,
+          "retained_cells": 0,
+          "observation_mismatches": 0,
+          "migrated_bytes": 867,
+          "sidecar_bytes": 0,
+          "ledger_bytes": 2890,
+          "elapsed_median_ms": 32.835,
+          "bundle_median_bytes": 21148
+        },
+        "full-row": {
+          "strategy": "full-row",
+          "input_rows": 150,
+          "admitted": 0,
+          "recovered": 150,
+          "rejected": 0,
+          "retained_cells": 450,
+          "observation_mismatches": 0,
+          "migrated_bytes": 7434,
+          "sidecar_bytes": 31700,
+          "ledger_bytes": 34950,
+          "elapsed_median_ms": 52.495,
+          "bundle_median_bytes": 93935
+        }
+      }
+    },
+    {
+      "case": "iris.split",
+      "source_rows_sha256": "8121e55021d938dc1d9e2171d35bb5552ef0671143420a75c68d3f3db3ce80e3",
+      "strategies": {
+        "sparse": {
+          "strategy": "sparse",
+          "input_rows": 150,
+          "admitted": 150,
+          "recovered": 0,
+          "rejected": 0,
+          "retained_cells": 0,
+          "observation_mismatches": 0,
+          "migrated_bytes": 8352,
+          "sidecar_bytes": 0,
+          "ledger_bytes": 25500,
+          "elapsed_median_ms": 41.981,
+          "bundle_median_bytes": 52297
+        },
+        "guard-only": {
+          "strategy": "guard-only",
+          "input_rows": 150,
+          "admitted": 150,
+          "recovered": 0,
+          "rejected": 0,
+          "retained_cells": 0,
+          "observation_mismatches": 0,
+          "migrated_bytes": 8352,
+          "sidecar_bytes": 0,
+          "ledger_bytes": 25500,
+          "elapsed_median_ms": 37.976,
+          "bundle_median_bytes": 52305
+        },
+        "full-row": {
+          "strategy": "full-row",
+          "input_rows": 150,
+          "admitted": 0,
+          "recovered": 150,
+          "rejected": 0,
+          "retained_cells": 450,
+          "observation_mismatches": 0,
+          "migrated_bytes": 8352,
+          "sidecar_bytes": 31700,
+          "ledger_bytes": 34950,
+          "elapsed_median_ms": 63.68,
+          "bundle_median_bytes": 93457
+        }
+      }
+    },
+    {
+      "case": "wine_red.safe",
+      "source_rows_sha256": "cbaf6aeede24e3797560da242737ad9ee11e96334b1a5a7e4f3964e947326573",
+      "strategies": {
+        "sparse": {
+          "strategy": "sparse",
+          "input_rows": 1599,
+          "admitted": 1599,
+          "recovered": 0,
+          "rejected": 0,
+          "retained_cells": 0,
+          "observation_mismatches": 0,
+          "migrated_bytes": 60111,
+          "sidecar_bytes": 0,
+          "ledger_bytes": 271830,
+          "elapsed_median_ms": 154.969,
+          "bundle_median_bytes": 493644
+        },
+        "guard-only": {
+          "strategy": "guard-only",
+          "input_rows": 1599,
+          "admitted": 1599,
+          "recovered": 0,
+          "rejected": 0,
+          "retained_cells": 0,
+          "observation_mismatches": 0,
+          "migrated_bytes": 60111,
+          "sidecar_bytes": 0,
+          "ledger_bytes": 271830,
+          "elapsed_median_ms": 170.569,
+          "bundle_median_bytes": 493652
+        },
+        "full-row": {
+          "strategy": "full-row",
+          "input_rows": 1599,
+          "admitted": 0,
+          "recovered": 1599,
+          "rejected": 0,
+          "retained_cells": 4797,
+          "observation_mismatches": 0,
+          "migrated_bytes": 60111,
+          "sidecar_bytes": 315257,
+          "ledger_bytes": 372567,
+          "elapsed_median_ms": 209.102,
+          "bundle_median_bytes": 909650
+        }
+      }
+    },
+    {
+      "case": "wine_red.strict",
+      "source_rows_sha256": "cbaf6aeede24e3797560da242737ad9ee11e96334b1a5a7e4f3964e947326573",
+      "strategies": {
+        "sparse": {
+          "strategy": "sparse",
+          "input_rows": 1599,
+          "admitted": 1214,
+          "recovered": 385,
+          "rejected": 0,
+          "retained_cells": 385,
+          "observation_mismatches": 0,
+          "migrated_bytes": 60111,
+          "sidecar_bytes": 60472,
+          "ledger_bytes": 296085,
+          "elapsed_median_ms": 219.893,
+          "bundle_median_bytes": 578446
+        },
+        "guard-only": {
+          "strategy": "guard-only",
+          "input_rows": 1599,
+          "admitted": 1214,
+          "recovered": 0,
+          "rejected": 385,
+          "retained_cells": 0,
+          "observation_mismatches": 0,
+          "migrated_bytes": 45481,
+          "sidecar_bytes": 0,
+          "ledger_bytes": 206380,
+          "elapsed_median_ms": 150.53,
+          "bundle_median_bytes": 410098
+        },
+        "full-row": {
+          "strategy": "full-row",
+          "input_rows": 1599,
+          "admitted": 0,
+          "recovered": 1599,
+          "rejected": 0,
+          "retained_cells": 4797,
+          "observation_mismatches": 0,
+          "migrated_bytes": 60111,
+          "sidecar_bytes": 315257,
+          "ledger_bytes": 372567,
+          "elapsed_median_ms": 226.755,
+          "bundle_median_bytes": 909717
+        }
+      }
+    },
+    {
+      "case": "wine_red.selected",
+      "source_rows_sha256": "cbaf6aeede24e3797560da242737ad9ee11e96334b1a5a7e4f3964e947326573",
+      "strategies": {
+        "sparse": {
+          "strategy": "sparse",
+          "input_rows": 1599,
+          "admitted": 190,
+          "recovered": 1409,
+          "rejected": 0,
+          "retained_cells": 1409,
+          "observation_mismatches": 0,
+          "migrated_bytes": 60111,
+          "sidecar_bytes": 220646,
+          "ledger_bytes": 360597,
+          "elapsed_median_ms": 179.649,
+          "bundle_median_bytes": 816373
+        },
+        "guard-only": {
+          "strategy": "guard-only",
+          "input_rows": 1599,
+          "admitted": 190,
+          "recovered": 0,
+          "rejected": 1409,
+          "retained_cells": 0,
+          "observation_mismatches": 0,
+          "migrated_bytes": 7219,
+          "sidecar_bytes": 0,
+          "ledger_bytes": 32300,
+          "elapsed_median_ms": 63.756,
+          "bundle_median_bytes": 188704
+        },
+        "full-row": {
+          "strategy": "full-row",
+          "input_rows": 1599,
+          "admitted": 0,
+          "recovered": 1599,
+          "rejected": 0,
+          "retained_cells": 4797,
+          "observation_mismatches": 0,
+          "migrated_bytes": 60111,
+          "sidecar_bytes": 315257,
+          "ledger_bytes": 372567,
+          "elapsed_median_ms": 200.87,
+          "bundle_median_bytes": 922956
+        }
+      }
+    },
+    {
+      "case": "nyc311.documented_addition",
+      "source_rows_sha256": "fdab0e2e34ffe31a6496eeaa6a143f3c01fe784c67e58666091526ca56eee8ee",
+      "strategies": {
+        "sparse": {
+          "strategy": "sparse",
+          "input_rows": 2,
+          "admitted": 2,
+          "recovered": 0,
+          "rejected": 0,
+          "retained_cells": 0,
+          "observation_mismatches": 0,
+          "migrated_bytes": 205,
+          "sidecar_bytes": 0,
+          "ledger_bytes": 340,
+          "elapsed_median_ms": 53.902,
+          "bundle_median_bytes": 4386
+        },
+        "guard-only": {
+          "strategy": "guard-only",
+          "input_rows": 2,
+          "admitted": 2,
+          "recovered": 0,
+          "rejected": 0,
+          "retained_cells": 0,
+          "observation_mismatches": 0,
+          "migrated_bytes": 205,
+          "sidecar_bytes": 0,
+          "ledger_bytes": 340,
+          "elapsed_median_ms": 55.939,
+          "bundle_median_bytes": 4394
+        },
+        "full-row": {
+          "strategy": "full-row",
+          "input_rows": 2,
+          "admitted": 0,
+          "recovered": 2,
+          "rejected": 0,
+          "retained_cells": 6,
+          "observation_mismatches": 0,
+          "migrated_bytes": 205,
+          "sidecar_bytes": 448,
+          "ledger_bytes": 466,
+          "elapsed_median_ms": 67.709,
+          "bundle_median_bytes": 4966
+        }
+      }
+    },
+    {
+      "case": "control.observed_drop",
+      "source_rows_sha256": "8627f83a2f4629d9572f8185a918666616af4ae8ab4c8a1276c81e63e080cb98",
+      "strategies": {
+        "sparse": {
+          "strategy": "sparse",
+          "input_rows": 2,
+          "admitted": 0,
+          "recovered": 2,
+          "rejected": 0,
+          "retained_cells": 2,
+          "observation_mismatches": 0,
+          "migrated_bytes": 104,
+          "sidecar_bytes": 306,
+          "ledger_bytes": 466,
+          "elapsed_median_ms": 75.436,
+          "bundle_median_bytes": 2300
+        },
+        "guard-only": {
+          "strategy": "guard-only",
+          "input_rows": 2,
+          "admitted": 0,
+          "recovered": 0,
+          "rejected": 2,
+          "retained_cells": 0,
+          "observation_mismatches": 0,
+          "migrated_bytes": 26,
+          "sidecar_bytes": 0,
+          "ledger_bytes": 0,
+          "elapsed_median_ms": 10.486,
+          "bundle_median_bytes": 1429
+        },
+        "full-row": {
+          "strategy": "full-row",
+          "input_rows": 2,
+          "admitted": 0,
+          "recovered": 2,
+          "rejected": 0,
+          "retained_cells": 6,
+          "observation_mismatches": 0,
+          "migrated_bytes": 104,
+          "sidecar_bytes": 368,
+          "ledger_bytes": 466,
+          "elapsed_median_ms": 39.152,
+          "bundle_median_bytes": 2366
+        }
+      }
+    }
+  ]
+}

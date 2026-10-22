@@ -3,7 +3,7 @@
 This pilot tests explicit **synthetic** schema changes on real rows. The
 datasets' publishers did not make these schema changes. The case files in
 `cases/` are the complete pipeline and mapping definitions; `results.json` is
-the raw output from `run_study.py` on Python 3.12.12 and Windows 11. The Git
+the raw output from `run_study.py` on Python 3.12.14 and Windows 11. The Git
 base at the start of this work was `d725ff08f0a4d3f0f79ce433368e21f8dfb9c1d1`
 with pre-existing uncommitted work, so the base hash alone does not identify
 the prototype. Preserve these files and record a later revision before
@@ -36,7 +36,37 @@ python -m evaluation.csv_parity
 python -m evaluation.recovery_study
 python -m evaluation.structural_matrix
 python -m evaluation.freeze_manifest
+python -m evaluation.migration_study
 ```
+
+## Integrated compiled migration study
+
+`python -m evaluation.migration_study` writes
+[`migration-results.json`](migration-results.json). It runs the ten synthetic
+pilot cases under three strategies, with three end-to-end repetitions each:
+
+- `sparse` admits guard-passing rows and retains only needed old cells on
+  guard failures or observed drops.
+- `guard-only` rejects rows that fail a guard or need an observed dropped field.
+- `full-row` retains every declared old source cell for every well-typed row.
+
+The study also runs an observed-drop collision control and a
+[two-row NYC311 field-addition reenactment](real_history/README.md). The city
+documented the 2018 addition and the source rows predate it, but the new-field
+values are experimental empty defaults, not an observed official backfill.
+This is limited real-history evidence, not a real before/after snapshot or a
+real lossy type change.
+
+Results include admitted, recovered, and rejected rows; retained cells;
+sidecar, ledger, migrated, and total bundle bytes; three-run median elapsed
+time; and typed observation mismatches on admitted or recovered rows. The
+guard-only mismatch count excludes its rejected rows, so compare it with
+admission coverage. End-to-end timings include analysis, migration, writing,
+and disk replay, while the strategies process different numbers of rows.
+They are not isolated overhead measurements. Total bundle bytes include the
+compulsory migrated rows, ledger, compiled plan, replay, rejects, and summary;
+sidecar bytes count only retained-cell entries. See the
+[migration method](../docs/migration-method.md).
 
 Use `python -m evaluation.run_study --fetch` only to refetch the three UCI raw
 files. The ordinary run uses the included files and needs no network access.

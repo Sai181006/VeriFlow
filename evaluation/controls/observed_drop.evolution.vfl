@@ -1,0 +1,3 @@
+schema Old { name: text; score: decimal; legacy: text; }
+schema New { score: decimal; legacy: text; }
+evolve Old to New { drop name; }
