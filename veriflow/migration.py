@@ -123,11 +123,20 @@ def replay_migration(bundle: Path, program: EvolvedProgram | None = None) -> lis
                 raise ValueError("Admitted row unexpectedly has a sidecar")
             if mode == "admitted" and entry.get("sidecar_sha256") is not None:
                 raise ValueError("Admitted row has an unexpected sidecar digest")
+            certified = entry.get("certified_fields", [])
+            if not isinstance(certified, list) or any(not isinstance(name, str)
+                                                      for name in certified) or len(certified) != len(set(certified)):
+                raise ValueError("Invalid binding certificates")
+            if mode == "admitted" and certified:
+                raise ValueError("Admitted row has unexpected binding certificates")
+            if saved and set(certified) & set(saved["fields"]):
+                raise ValueError("A binding cannot be both certified and retained")
             values = {name: _old_value(cell, kind)
                       for (name, kind), cell in zip(program.new_fields, cells, strict=True)}
             result = execute_evolved(program, values,
                                      retained=saved["fields"] if saved else {},
-                                     admitted=mode == "admitted")
+                                     admitted=mode == "admitted",
+                                     certified_fields=frozenset(certified))
             results.append(result)
     if recovered_ids != set(sidecar):
         raise ValueError("Orphan sidecar row ID")
@@ -224,12 +233,18 @@ def run_migration(checked: CheckedProgram, evolution: EvolutionPlan,
                         if not rule.guards or not all(guard.accepts(old) for guard in rule.guards):
                             retained.update({name: old[name] for name in rule.fields})
                 mode = "recovered" if retained or strategy == "full-row" else "admitted"
+                certified = frozenset(
+                    binding.old_field for binding in compiled.bindings
+                    if mode == "recovered" and binding.guards
+                    and binding.old_field not in retained
+                    and all(guard.accepts(old) for guard in binding.guards))
                 try:
                     migrated = migrate_forward(evolution, old)
                     new_cells = [_cell(migrated[name]) for name in fields]
                     # Check the generated program before publishing the row.
                     execute_evolved(compiled, migrated, retained=retained,
-                                    admitted=mode == "admitted")
+                                    admitted=mode == "admitted",
+                                    certified_fields=certified)
                 except (ValueError, KeyError, ArithmeticError) as error:
                     reject_writer.writerow([row_id, json.dumps(cells, ensure_ascii=False),
                                             f"migration failed: {error}"])
@@ -240,6 +255,7 @@ def run_migration(checked: CheckedProgram, evolution: EvolutionPlan,
                 serialized_retained = {name: _cell(value) for name, value in retained.items()}
                 ledger_stream.write(json.dumps({"id": row_id, "mode": mode,
                                                 "row_sha256": digest,
+                                                "certified_fields": sorted(certified),
                                                 "sidecar_sha256": _json_digest(serialized_retained)
                                                 if mode == "recovered" else None}) + "\n")
                 if mode == "recovered":

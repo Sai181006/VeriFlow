@@ -1,7 +1,11 @@
 {
-  "python": "3.11.9",
-  "platform": "Windows-10-10.0.26200-SP0",
+  "python": "3.12.14",
+  "platform": "Windows-11-10.0.26200-SP0",
   "repetitions": 3,
+  "moh_history": {
+    "paired_rows": 7315,
+    "nonzero_dropped_values": 4060
+  },
   "history_scope": "Documented 2018 NYC311 field additions on two transcribed 2016 records; added values are explicit empty defaults, not official backfill",
   "cases": [
     {
@@ -18,9 +22,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 156662,
           "sidecar_bytes": 0,
-          "ledger_bytes": 710090,
-          "elapsed_median_ms": 320.561,
-          "bundle_median_bytes": 1283364
+          "ledger_bytes": 810338,
+          "elapsed_median_ms": 343.801,
+          "bundle_median_bytes": 1383612
         },
         "guard-only": {
           "strategy": "guard-only",
@@ -32,9 +36,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 156662,
           "sidecar_bytes": 0,
-          "ledger_bytes": 710090,
-          "elapsed_median_ms": 337.457,
-          "bundle_median_bytes": 1283372
+          "ledger_bytes": 810338,
+          "elapsed_median_ms": 318.499,
+          "bundle_median_bytes": 1383620
         },
         "full-row": {
           "strategy": "full-row",
@@ -46,9 +50,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 156662,
           "sidecar_bytes": 793321,
-          "ledger_bytes": 973241,
-          "elapsed_median_ms": 446.855,
-          "bundle_median_bytes": 2339849
+          "ledger_bytes": 1073489,
+          "elapsed_median_ms": 440.507,
+          "bundle_median_bytes": 2440098
         }
       }
     },
@@ -66,9 +70,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 156662,
           "sidecar_bytes": 227953,
-          "ledger_bytes": 797975,
-          "elapsed_median_ms": 396.586,
-          "bundle_median_bytes": 1599415
+          "ledger_bytes": 898223,
+          "elapsed_median_ms": 456.468,
+          "bundle_median_bytes": 1699663
         },
         "guard-only": {
           "strategy": "guard-only",
@@ -80,9 +84,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 103966,
           "sidecar_bytes": 0,
-          "ledger_bytes": 472940,
-          "elapsed_median_ms": 254.679,
-          "bundle_median_bytes": 980349
+          "ledger_bytes": 539708,
+          "elapsed_median_ms": 361.327,
+          "bundle_median_bytes": 1047117
         },
         "full-row": {
           "strategy": "full-row",
@@ -94,9 +98,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 156662,
           "sidecar_bytes": 793321,
-          "ledger_bytes": 973241,
-          "elapsed_median_ms": 447.607,
-          "bundle_median_bytes": 2340051
+          "ledger_bytes": 1073489,
+          "elapsed_median_ms": 1394.518,
+          "bundle_median_bytes": 2440301
         }
       }
     },
@@ -114,9 +118,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 156662,
           "sidecar_bytes": 682479,
-          "ledger_bytes": 973178,
-          "elapsed_median_ms": 362.973,
-          "bundle_median_bytes": 2282761
+          "ledger_bytes": 1073426,
+          "elapsed_median_ms": 1314.129,
+          "bundle_median_bytes": 2383011
         },
         "guard-only": {
           "strategy": "guard-only",
@@ -128,9 +132,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 70,
           "sidecar_bytes": 0,
-          "ledger_bytes": 170,
-          "elapsed_median_ms": 94.092,
-          "bundle_median_bytes": 381821
+          "ledger_bytes": 194,
+          "elapsed_median_ms": 202.61,
+          "bundle_median_bytes": 381846
         },
         "full-row": {
           "strategy": "full-row",
@@ -142,9 +146,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 156662,
           "sidecar_bytes": 793321,
-          "ledger_bytes": 973241,
-          "elapsed_median_ms": 356.161,
-          "bundle_median_bytes": 2393671
+          "ledger_bytes": 1073489,
+          "elapsed_median_ms": 1266.999,
+          "bundle_median_bytes": 2493921
         }
       }
     },
@@ -162,9 +166,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 7434,
           "sidecar_bytes": 0,
-          "ledger_bytes": 25500,
-          "elapsed_median_ms": 57.88,
-          "bundle_median_bytes": 52695
+          "ledger_bytes": 29100,
+          "elapsed_median_ms": 96.673,
+          "bundle_median_bytes": 56295
         },
         "guard-only": {
           "strategy": "guard-only",
@@ -176,9 +180,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 7434,
           "sidecar_bytes": 0,
-          "ledger_bytes": 25500,
-          "elapsed_median_ms": 41.306,
-          "bundle_median_bytes": 52703
+          "ledger_bytes": 29100,
+          "elapsed_median_ms": 92.77,
+          "bundle_median_bytes": 56303
         },
         "full-row": {
           "strategy": "full-row",
@@ -190,9 +194,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 7434,
           "sidecar_bytes": 31700,
-          "ledger_bytes": 34950,
-          "elapsed_median_ms": 71.739,
-          "bundle_median_bytes": 93855
+          "ledger_bytes": 38550,
+          "elapsed_median_ms": 142.193,
+          "bundle_median_bytes": 97456
         }
       }
     },
@@ -210,9 +214,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 7434,
           "sidecar_bytes": 8211,
-          "ledger_bytes": 28713,
-          "elapsed_median_ms": 106.089,
-          "bundle_median_bytes": 64201
+          "ledger_bytes": 32313,
+          "elapsed_median_ms": 133.609,
+          "bundle_median_bytes": 67801
         },
         "guard-only": {
           "strategy": "guard-only",
@@ -224,9 +228,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 4927,
           "sidecar_bytes": 0,
-          "ledger_bytes": 16830,
-          "elapsed_median_ms": 50.452,
-          "bundle_median_bytes": 41093
+          "ledger_bytes": 19206,
+          "elapsed_median_ms": 83.713,
+          "bundle_median_bytes": 43469
         },
         "full-row": {
           "strategy": "full-row",
@@ -238,9 +242,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 7434,
           "sidecar_bytes": 31700,
-          "ledger_bytes": 34950,
-          "elapsed_median_ms": 64.896,
-          "bundle_median_bytes": 93932
+          "ledger_bytes": 38550,
+          "elapsed_median_ms": 135.085,
+          "bundle_median_bytes": 97533
         }
       }
     },
@@ -258,9 +262,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 7434,
           "sidecar_bytes": 21413,
-          "ledger_bytes": 33879,
-          "elapsed_median_ms": 61.758,
-          "bundle_median_bytes": 82574
+          "ledger_bytes": 37479,
+          "elapsed_median_ms": 126.266,
+          "bundle_median_bytes": 86175
         },
         "guard-only": {
           "strategy": "guard-only",
@@ -272,9 +276,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 867,
           "sidecar_bytes": 0,
-          "ledger_bytes": 2890,
-          "elapsed_median_ms": 32.835,
-          "bundle_median_bytes": 21148
+          "ledger_bytes": 3298,
+          "elapsed_median_ms": 56.191,
+          "bundle_median_bytes": 21556
         },
         "full-row": {
           "strategy": "full-row",
@@ -286,9 +290,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 7434,
           "sidecar_bytes": 31700,
-          "ledger_bytes": 34950,
-          "elapsed_median_ms": 52.495,
-          "bundle_median_bytes": 93935
+          "ledger_bytes": 38550,
+          "elapsed_median_ms": 107.627,
+          "bundle_median_bytes": 97536
         }
       }
     },
@@ -306,9 +310,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 8352,
           "sidecar_bytes": 0,
-          "ledger_bytes": 25500,
-          "elapsed_median_ms": 41.981,
-          "bundle_median_bytes": 52297
+          "ledger_bytes": 29100,
+          "elapsed_median_ms": 105.314,
+          "bundle_median_bytes": 55898
         },
         "guard-only": {
           "strategy": "guard-only",
@@ -320,9 +324,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 8352,
           "sidecar_bytes": 0,
-          "ledger_bytes": 25500,
-          "elapsed_median_ms": 37.976,
-          "bundle_median_bytes": 52305
+          "ledger_bytes": 29100,
+          "elapsed_median_ms": 88.118,
+          "bundle_median_bytes": 55905
         },
         "full-row": {
           "strategy": "full-row",
@@ -334,9 +338,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 8352,
           "sidecar_bytes": 31700,
-          "ledger_bytes": 34950,
-          "elapsed_median_ms": 63.68,
-          "bundle_median_bytes": 93457
+          "ledger_bytes": 38550,
+          "elapsed_median_ms": 121.722,
+          "bundle_median_bytes": 97058
         }
       }
     },
@@ -354,9 +358,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 60111,
           "sidecar_bytes": 0,
-          "ledger_bytes": 271830,
-          "elapsed_median_ms": 154.969,
-          "bundle_median_bytes": 493644
+          "ledger_bytes": 310206,
+          "elapsed_median_ms": 442.21,
+          "bundle_median_bytes": 532020
         },
         "guard-only": {
           "strategy": "guard-only",
@@ -368,9 +372,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 60111,
           "sidecar_bytes": 0,
-          "ledger_bytes": 271830,
-          "elapsed_median_ms": 170.569,
-          "bundle_median_bytes": 493652
+          "ledger_bytes": 310206,
+          "elapsed_median_ms": 434.782,
+          "bundle_median_bytes": 532028
         },
         "full-row": {
           "strategy": "full-row",
@@ -382,9 +386,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 60111,
           "sidecar_bytes": 315257,
-          "ledger_bytes": 372567,
-          "elapsed_median_ms": 209.102,
-          "bundle_median_bytes": 909650
+          "ledger_bytes": 410943,
+          "elapsed_median_ms": 599.872,
+          "bundle_median_bytes": 948026
         }
       }
     },
@@ -402,9 +406,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 60111,
           "sidecar_bytes": 60472,
-          "ledger_bytes": 296085,
-          "elapsed_median_ms": 219.893,
-          "bundle_median_bytes": 578446
+          "ledger_bytes": 334461,
+          "elapsed_median_ms": 595.409,
+          "bundle_median_bytes": 616822
         },
         "guard-only": {
           "strategy": "guard-only",
@@ -416,9 +420,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 45481,
           "sidecar_bytes": 0,
-          "ledger_bytes": 206380,
-          "elapsed_median_ms": 150.53,
-          "bundle_median_bytes": 410098
+          "ledger_bytes": 235516,
+          "elapsed_median_ms": 351.718,
+          "bundle_median_bytes": 439234
         },
         "full-row": {
           "strategy": "full-row",
@@ -430,9 +434,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 60111,
           "sidecar_bytes": 315257,
-          "ledger_bytes": 372567,
-          "elapsed_median_ms": 226.755,
-          "bundle_median_bytes": 909717
+          "ledger_bytes": 410943,
+          "elapsed_median_ms": 649.481,
+          "bundle_median_bytes": 948093
         }
       }
     },
@@ -450,9 +454,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 60111,
           "sidecar_bytes": 220646,
-          "ledger_bytes": 360597,
-          "elapsed_median_ms": 179.649,
-          "bundle_median_bytes": 816373
+          "ledger_bytes": 398973,
+          "elapsed_median_ms": 494.054,
+          "bundle_median_bytes": 854749
         },
         "guard-only": {
           "strategy": "guard-only",
@@ -464,9 +468,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 7219,
           "sidecar_bytes": 0,
-          "ledger_bytes": 32300,
-          "elapsed_median_ms": 63.756,
-          "bundle_median_bytes": 188704
+          "ledger_bytes": 36860,
+          "elapsed_median_ms": 150.144,
+          "bundle_median_bytes": 193265
         },
         "full-row": {
           "strategy": "full-row",
@@ -478,9 +482,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 60111,
           "sidecar_bytes": 315257,
-          "ledger_bytes": 372567,
-          "elapsed_median_ms": 200.87,
-          "bundle_median_bytes": 922956
+          "ledger_bytes": 410943,
+          "elapsed_median_ms": 565.755,
+          "bundle_median_bytes": 961332
         }
       }
     },
@@ -498,9 +502,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 205,
           "sidecar_bytes": 0,
-          "ledger_bytes": 340,
-          "elapsed_median_ms": 53.902,
-          "bundle_median_bytes": 4386
+          "ledger_bytes": 388,
+          "elapsed_median_ms": 48.129,
+          "bundle_median_bytes": 4434
         },
         "guard-only": {
           "strategy": "guard-only",
@@ -512,9 +516,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 205,
           "sidecar_bytes": 0,
-          "ledger_bytes": 340,
-          "elapsed_median_ms": 55.939,
-          "bundle_median_bytes": 4394
+          "ledger_bytes": 388,
+          "elapsed_median_ms": 42.77,
+          "bundle_median_bytes": 4442
         },
         "full-row": {
           "strategy": "full-row",
@@ -526,9 +530,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 205,
           "sidecar_bytes": 448,
-          "ledger_bytes": 466,
-          "elapsed_median_ms": 67.709,
-          "bundle_median_bytes": 4966
+          "ledger_bytes": 514,
+          "elapsed_median_ms": 75.567,
+          "bundle_median_bytes": 5014
         }
       }
     },
@@ -546,9 +550,9 @@
           "observation_mismatches": 0,
           "migrated_bytes": 104,
           "sidecar_bytes": 306,
-          "ledger_bytes": 466,
-          "elapsed_median_ms": 75.436,
-          "bundle_median_bytes": 2300
+          "ledger_bytes": 514,
+          "elapsed_median_ms": 74.543,
+          "bundle_median_bytes": 2348
         },
         "guard-only": {
           "strategy": "guard-only",
@@ -561,7 +565,7 @@
           "migrated_bytes": 26,
           "sidecar_bytes": 0,
           "ledger_bytes": 0,
-          "elapsed_median_ms": 10.486,
+          "elapsed_median_ms": 20.982,
           "bundle_median_bytes": 1429
         },
         "full-row": {
@@ -574,9 +578,117 @@
           "observation_mismatches": 0,
           "migrated_bytes": 104,
           "sidecar_bytes": 368,
-          "ledger_bytes": 466,
-          "elapsed_median_ms": 39.152,
-          "bundle_median_bytes": 2366
+          "ledger_bytes": 514,
+          "elapsed_median_ms": 79.499,
+          "bundle_median_bytes": 2414
+        }
+      }
+    },
+    {
+      "case": "moh_icu.real_preserved",
+      "source_rows_sha256": "b8a0d35cc73b45f6b9367f67472ee2fbc01559993185ce55694317d2d0f651f6",
+      "strategies": {
+        "sparse": {
+          "strategy": "sparse",
+          "input_rows": 7315,
+          "admitted": 7315,
+          "recovered": 0,
+          "rejected": 0,
+          "retained_cells": 0,
+          "observation_mismatches": 0,
+          "migrated_bytes": 426260,
+          "sidecar_bytes": 0,
+          "ledger_bytes": 1419110,
+          "actual_after_rows_checked": 7315,
+          "actual_after_mismatches": 0,
+          "elapsed_median_ms": 2053.86,
+          "bundle_median_bytes": 2682668
+        },
+        "guard-only": {
+          "strategy": "guard-only",
+          "input_rows": 7315,
+          "admitted": 7315,
+          "recovered": 0,
+          "rejected": 0,
+          "retained_cells": 0,
+          "observation_mismatches": 0,
+          "migrated_bytes": 426260,
+          "sidecar_bytes": 0,
+          "ledger_bytes": 1419110,
+          "actual_after_rows_checked": 7315,
+          "actual_after_mismatches": 0,
+          "elapsed_median_ms": 2021.316,
+          "bundle_median_bytes": 2682676
+        },
+        "full-row": {
+          "strategy": "full-row",
+          "input_rows": 7315,
+          "admitted": 0,
+          "recovered": 7315,
+          "rejected": 0,
+          "retained_cells": 36575,
+          "observation_mismatches": 0,
+          "migrated_bytes": 426260,
+          "sidecar_bytes": 1728544,
+          "ledger_bytes": 1879955,
+          "actual_after_rows_checked": 7315,
+          "actual_after_mismatches": 0,
+          "elapsed_median_ms": 2716.574,
+          "bundle_median_bytes": 4872071
+        }
+      }
+    },
+    {
+      "case": "moh_icu.real_recovered",
+      "source_rows_sha256": "b8a0d35cc73b45f6b9367f67472ee2fbc01559993185ce55694317d2d0f651f6",
+      "strategies": {
+        "sparse": {
+          "strategy": "sparse",
+          "input_rows": 7315,
+          "admitted": 0,
+          "recovered": 7315,
+          "rejected": 0,
+          "retained_cells": 7315,
+          "observation_mismatches": 0,
+          "migrated_bytes": 426260,
+          "sidecar_bytes": 1141397,
+          "ledger_bytes": 1879955,
+          "actual_after_rows_checked": 7315,
+          "actual_after_mismatches": 0,
+          "elapsed_median_ms": 2592.247,
+          "bundle_median_bytes": 4281009
+        },
+        "guard-only": {
+          "strategy": "guard-only",
+          "input_rows": 7315,
+          "admitted": 0,
+          "recovered": 0,
+          "rejected": 7315,
+          "retained_cells": 0,
+          "observation_mismatches": 0,
+          "migrated_bytes": 43,
+          "sidecar_bytes": 0,
+          "ledger_bytes": 0,
+          "actual_after_rows_checked": 0,
+          "actual_after_mismatches": 0,
+          "elapsed_median_ms": 238.42,
+          "bundle_median_bytes": 861956
+        },
+        "full-row": {
+          "strategy": "full-row",
+          "input_rows": 7315,
+          "admitted": 0,
+          "recovered": 7315,
+          "rejected": 0,
+          "retained_cells": 36575,
+          "observation_mismatches": 0,
+          "migrated_bytes": 426260,
+          "sidecar_bytes": 1728544,
+          "ledger_bytes": 1879955,
+          "actual_after_rows_checked": 7315,
+          "actual_after_mismatches": 0,
+          "elapsed_median_ms": 2740.699,
+          "bundle_median_bytes": 4868161
         }
       }
     }

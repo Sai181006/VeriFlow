@@ -21,10 +21,12 @@ INCLUDE = (
     *sorted(Path("evaluation/real_history").glob("*.vfl")),
     *sorted(Path("evaluation/real_history").glob("*.csv")),
     *sorted(Path("evaluation/real_history").glob("*.md")),
+    *sorted(Path("evaluation/real_history").glob("*.py")),
     *sorted(Path("evaluation/data").glob("*.csv")),
     *sorted(Path("evaluation/data").glob("*.raw")),
     *sorted(Path("evaluation").glob("*.json")),
     *sorted(Path("docs").glob("*.md")),
+    *sorted(Path("docs").glob("paper-manuscript-*.pdf")),
 )
 
 

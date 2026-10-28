@@ -146,6 +146,16 @@ The bundle directory must not already exist. `migrate-run` also accepts
 `--strategy guard-only` or `--strategy full-row` for baseline comparisons.
 See the [migration method](docs/migration-method.md) and
 [integrated evaluation](evaluation/README.md).
+The [current research manuscript](docs/paper-manuscript-2026-10-28.md) and its
+[review PDF](docs/paper-manuscript-2026-10-28.pdf) evaluate
+the compiled migration on a paired Malaysian Ministry of Health ICU schema
+history. To verify its included historical projections and regenerate the
+three-strategy results, run:
+
+```sh
+python -m evaluation.real_history.prepare_moh_icu
+python -m evaluation.migration_study
+```
 
 The `run` command creates `examples/selected_students.csv` and prints a JSON
 summary. Remove that generated file or use a new `emit` path before running the

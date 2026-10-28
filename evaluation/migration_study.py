@@ -1,6 +1,7 @@
 """Compare sparse migration, guard-only admission, and full-row retention."""
 
 from dataclasses import asdict
+import csv
 import hashlib
 import json
 from pathlib import Path
@@ -15,6 +16,7 @@ from veriflow.parser import parse
 from veriflow.semantics import analyze
 
 from .run_study import CASE_NAMES, CASES, DATA, ROOT
+from .real_history.prepare_moh_icu import verify as verify_moh_history
 
 
 HISTORY = ROOT / "real_history"
@@ -22,8 +24,23 @@ CONTROLS = ROOT / "controls"
 STRATEGIES = ("sparse", "guard-only", "full-row")
 
 
+def compare_actual_after(bundle: Path, actual_after_path: Path) -> dict[str, int]:
+    with actual_after_path.open(encoding="utf-8", newline="") as stream:
+        expected = {(row["date"], row["state"]): row for row in csv.DictReader(stream)}
+    mismatches = checked = 0
+    with (bundle / "migrated.csv").open(encoding="utf-8", newline="") as stream:
+        for row in csv.DictReader(stream):
+            row.pop("_veriflow_id")
+            actual = expected.get((row["date"], row["state"]))
+            checked += 1
+            mismatches += actual != row
+    return {"actual_after_rows_checked": checked,
+            "actual_after_mismatches": mismatches}
+
+
 def evaluate_case(label: str, source_path: Path, evolution_path: Path,
-                  input_path: Path, repetitions: int = 3) -> dict:
+                  input_path: Path, repetitions: int = 3,
+                  actual_after_path: Path | None = None) -> dict:
     checked = analyze(parse(source_path.read_text(encoding="utf-8")))
     evolution = compile_evolution(parse_evolution(
         evolution_path.read_text(encoding="utf-8")))
@@ -39,6 +56,8 @@ def evaluate_case(label: str, source_path: Path, evolution_path: Path,
                 entry = asdict(result)
                 entry.pop("bundle")
                 entry["bundle_bytes"] = sum(path.stat().st_size for path in bundle.iterdir())
+                if actual_after_path is not None:
+                    entry.update(compare_actual_after(bundle, actual_after_path))
                 samples.append(entry)
         metrics = {key: value for key, value in samples[0].items()
                    if key not in {"elapsed_ms", "bundle_bytes"}}
@@ -48,6 +67,8 @@ def evaluate_case(label: str, source_path: Path, evolution_path: Path,
             raise AssertionError(f"{label}/{strategy}: nondeterministic counts or byte lengths")
         if metrics["observation_mismatches"]:
             raise AssertionError(f"{label}/{strategy}: replay observation mismatch")
+        if metrics.get("actual_after_mismatches"):
+            raise AssertionError(f"{label}/{strategy}: actual post-change snapshot mismatch")
         outputs[strategy] = {**metrics,
                              "elapsed_median_ms": round(statistics.median(
                                  sample["elapsed_ms"] for sample in samples), 3),
@@ -58,6 +79,7 @@ def evaluate_case(label: str, source_path: Path, evolution_path: Path,
 
 
 def main() -> None:
+    history_counts = verify_moh_history()
     cases = []
     for dataset, names in CASE_NAMES.items():
         for case in names:
@@ -73,8 +95,15 @@ def main() -> None:
                                CONTROLS / "observed_drop.vfl",
                                CONTROLS / "observed_drop.evolution.vfl",
                                CONTROLS / "observed_drop.csv"))
+    for variant in ("preserved", "recovered"):
+        cases.append(evaluate_case(f"moh_icu.real_{variant}",
+                                   HISTORY / f"moh_icu_{variant}.vfl",
+                                   HISTORY / "moh_icu_evolution.vfl",
+                                   HISTORY / "moh_icu_2021_before.csv",
+                                   actual_after_path=HISTORY / "moh_icu_2021_after.csv"))
     output = {"python": platform.python_version(), "platform": platform.platform(),
               "repetitions": 3,
+              "moh_history": history_counts,
               "history_scope": "Documented 2018 NYC311 field additions on two transcribed 2016 records; added values are explicit empty defaults, not official backfill",
               "cases": cases}
     target = ROOT / "migration-results.json"

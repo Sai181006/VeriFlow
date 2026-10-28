@@ -1,5 +1,9 @@
 # Working paper draft: pipeline behavior under schema migration
 
+**Superseded by the [28 October 2026 submission draft](paper-manuscript-2026-10-28.md).**
+This file is retained as an earlier research snapshot; its adapter description
+and results predate the compiled migration and paired Malaysian ICU evaluation.
+
 **Status:** technical draft for supervisor feedback, updated 22 October 2026; not a submission manuscript.
 **Venue:** undecided. **Target:** within one month of 7 October 2026.
 

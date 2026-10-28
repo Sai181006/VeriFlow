@@ -1,5 +1,9 @@
 # Paper research tasks (implementation in progress)
 
+**Historical task plan.** See the [current manuscript](paper-manuscript-2026-10-28.md)
+and [current council execution](final-council-review-2026-10-28.md) for completed
+work and remaining scope.
+
 Checked items have code, tests, or reproducible artifacts linked below.
 Unchecked items remain before a credible submission. The supervisor has not
 selected a venue; the target is within one month. Use

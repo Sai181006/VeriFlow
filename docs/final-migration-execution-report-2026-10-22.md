@@ -1,5 +1,10 @@
 # Final compiled migration execution report — 22 October 2026
 
+**Historical report.** The [28 October manuscript](paper-manuscript-2026-10-28.md)
+and [current integrated results](../evaluation/migration-results.json) include
+the mixed-guard repair and paired Malaysian ICU history. Use those for current
+claims and numbers.
+
 ## Implemented scope
 
 VeriFlow now compiles a legacy row pipeline and an explicit one-step schema

@@ -1,5 +1,8 @@
 # Paper research context (working research direction)
 
+**Historical planning note.** The [current manuscript](paper-manuscript-2026-10-28.md)
+includes compiled migration, sparse recovery, and a paired real schema history.
+
 This document records the research question and prior-work position for
 VeriFlow. A restricted checker and pilot evaluation are now implemented; this
 does not establish that the contribution is novel enough for a particular

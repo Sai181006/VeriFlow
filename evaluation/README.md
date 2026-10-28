@@ -1,7 +1,8 @@
-# Reproducible pilot evaluation
+# Reproducible evaluation
 
-This pilot tests explicit **synthetic** schema changes on real rows. The
-datasets' publishers did not make these schema changes. The case files in
+The ten UCI pilot cases test explicit **synthetic** schema changes on real rows;
+their publishers did not make those changes. A separate paired Malaysian ICU
+history tests an actual documented rename and drop. The case files in
 `cases/` are the complete pipeline and mapping definitions; `results.json` is
 the raw output from `run_study.py` on Python 3.12.14 and Windows 11. The Git
 base at the start of this work was `d725ff08f0a4d3f0f79ce433368e21f8dfb9c1d1`
@@ -50,12 +51,17 @@ pilot cases under three strategies, with three end-to-end repetitions each:
 - `guard-only` rejects rows that fail a guard or need an observed dropped field.
 - `full-row` retains every declared old source cell for every well-typed row.
 
-The study also runs an observed-drop collision control and a
-[two-row NYC311 field-addition reenactment](real_history/README.md). The city
+The study also runs an observed-drop collision control, two pipelines over an
+[actual Malaysian Ministry of Health ICU rename-and-drop history](real_history/README.md),
+and a [two-row NYC311 field-addition reenactment](real_history/README.md). The city
 documented the 2018 addition and the source rows predate it, but the new-field
 values are experimental empty defaults, not an observed official backfill.
-This is limited real-history evidence, not a real before/after snapshot or a
-real lossy type change.
+The NYC311 case is limited real-history evidence, not a real before/after
+snapshot. The Malaysian case has actual paired versions with 7,315 matched rows
+and a removed field that is nonzero in 4,060 old rows. The study compares every
+migrated Malaysian row to the actual post-change projection, and separately
+replays the typed pipeline observation. The two Malaysian pipelines reuse the
+same source rows.
 
 Results include admitted, recovered, and rejected rows; retained cells;
 sidecar, ledger, migrated, and total bundle bytes; three-run median elapsed
@@ -67,6 +73,9 @@ They are not isolated overhead measurements. Total bundle bytes include the
 compulsory migrated rows, ledger, compiled plan, replay, rejects, and summary;
 sidecar bytes count only retained-cell entries. See the
 [migration method](../docs/migration-method.md).
+Recovered rows may carry per-field guard certificates for other observed fields
+whose guards passed before migration; the [mixed-guard regression](../tests/test_migration.py)
+tests this alongside one retained field.
 
 Use `python -m evaluation.run_study --fetch` only to refetch the three UCI raw
 files. The ordinary run uses the included files and needs no network access.
@@ -153,9 +162,11 @@ more comparable pilot cost measurement.
 
 ## Limits for a submission
 
-The cases use three public datasets and injected changes, so they do not
-establish that the method handles real organizational schema histories. The
-sampled data cannot prove universal soundness; the rule arguments and bounded
+The three UCI datasets still use injected changes. The Malaysian case supplies
+one real organizational schema event, but its two pipeline definitions are
+experimental and do not represent the Ministry's operational pipelines. A
+single change does not establish generality across organizations or migration
+types. The sampled data cannot prove universal soundness; rule arguments and bounded
 tests in [impact-method.md](../docs/impact-method.md) carry the scoped claim.
 The method lacks a general proof for unguarded structural changes, arbitrary new-schema row guarantees,
 malformed-row equivalence, and a standalone rewritten new-schema program. A

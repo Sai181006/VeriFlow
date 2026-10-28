@@ -35,7 +35,7 @@ does not need the original `.vfl` files. The bundle contains:
 | `program.json` | Compiled new-schema bindings and VM bytecode. |
 | `manifest.json` | Format version, strategy, and compiled-program digest. |
 | `migrated.csv` | New-schema columns and `_veriflow_id` for every accepted row. |
-| `ledger.jsonl` | Row IDs, admitted/recovered mode, migrated-row digest, and sidecar digest. |
+| `ledger.jsonl` | Row IDs, admitted/recovered mode, certified guarded fields, migrated-row digest, and sidecar digest. |
 | `sidecar.jsonl` | Retained old cells for recovered rows, joined by row ID. |
 | `rejects.csv` | Stable `id,raw_cells_json,reason` layout for malformed or refused rows. |
 | `replay.jsonl` | Typed-observation outcomes produced from the persisted bundle. |
@@ -48,6 +48,12 @@ the files and digests can forge a bundle. The UUID persists within the bundle
 but is not an identifier supplied by the source dataset. The prototype does
 not provide authenticated storage or cross-bundle identity continuity.
 
+On a recovered row, a guarded field whose old-row guard passed can be certified
+and reconstructed from the new row, while another guarded or dropped field is
+restored from the sidecar. Replay refuses a conditional binding that has
+neither its individual certificate nor its retained old cell. This permits
+mixed guard outcomes without retaining every observed source field.
+
 The `sparse` strategy retains a required dropped field on every affected row.
 For conditional conversion, split, or merge mappings, it retains the observed
 old source cell only on rows that fail its guard. The `full-row` strategy saves
@@ -57,8 +63,8 @@ Both sparse and full-row preserve the admitted/recovered rows in the evaluated
 fragment; guard-only preservation applies only to its admitted rows. Recovery
 is sufficient, not proven storage-minimal.
 
-To reproduce the comparison with the pilot and documented NYC311 addition
-case, run:
+To reproduce the comparison with the pilot, the paired Malaysian ICU schema
+history, and the documented NYC311 addition case, run:
 
 ```sh
 python -m evaluation.migration_study

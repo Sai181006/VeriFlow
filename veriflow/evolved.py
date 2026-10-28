@@ -123,12 +123,13 @@ def _typed(value: Any, kind: str) -> object:
 
 def execute_evolved(program: EvolvedProgram, new_record: dict[str, Any],
                     *, retained: dict[str, Any] | None = None,
-                    admitted: bool = False) -> Observation:
+                    admitted: bool = False,
+                    certified_fields: frozenset[str] = frozenset()) -> Observation:
     """Run compiled operations from new cells and certified retained cells.
 
     ``admitted`` asserts that migration checked all guards on the old row.
-    Without that assertion, every conditional binding must have a retained
-    source cell. A dropped observed field always needs retention.
+    A recovered row may instead certify individual guarded bindings whose
+    guards passed before migration. A dropped observed field needs retention.
     """
     retained = retained or {}
     expected_new = dict(program.new_fields)
@@ -136,6 +137,9 @@ def execute_evolved(program: EvolvedProgram, new_record: dict[str, Any],
         raise ValueError("New row does not match compiled new schema")
     if set(retained) - set(dict(program.old_fields)):
         raise ValueError("Sidecar contains an undeclared old field")
+    guarded_fields = {binding.old_field for binding in program.bindings if binding.guards}
+    if certified_fields - guarded_fields:
+        raise ValueError("Certificate names an unguarded old field")
     for name, kind in program.new_fields:
         _typed(new_record[name], kind)
     values: dict[str, object] = {}
@@ -145,7 +149,7 @@ def execute_evolved(program: EvolvedProgram, new_record: dict[str, Any],
         else:
             if binding.recovery_required:
                 raise ValueError(f"Retained old field {binding.old_field!r} is required")
-            if binding.guards and not admitted:
+            if binding.guards and not admitted and binding.old_field not in certified_fields:
                 raise ValueError(f"Guard certificate or retained {binding.old_field!r} is required")
             if binding.operation in {"copy", "rename", "convert"}:
                 value = new_record[binding.new_fields[0]]

@@ -1,4 +1,5 @@
 import csv
+import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
@@ -29,6 +30,51 @@ def scenario(body: str, evolution_rules: str, *, old: str = "score: decimal; nam
 
 
 class MigrationTests(unittest.TestCase):
+    def test_sparse_mixed_guards_certify_passed_binding(self):
+        checked, plan = scenario(
+            'keep where a > 40; keep where b > 40; select name;',
+            'convert a to a; convert b to b;',
+            old='a: decimal; b: decimal; name: text;',
+            new='a: int; b: int; name: text;')
+        with TemporaryDirectory(dir=ROOT / 'evaluation') as directory:
+            root = Path(directory)
+            source = root / 'pipeline.vfl'
+            source.write_text('source path supplied to run_migration', encoding='utf-8')
+            data = root / 'input.csv'
+            data.write_text('a,b,name\n41.7,40.7,Ada\n', encoding='utf-8')
+            bundle = root / 'bundle'
+            result = run_migration(checked, plan, source, bundle, input_path=data)
+            self.assertEqual((result.admitted, result.recovered, result.rejected,
+                              result.retained_cells, result.observation_mismatches),
+                             (0, 1, 0, 1, 0))
+            ledger = json.loads((bundle / 'ledger.jsonl').read_text(encoding='utf-8'))
+            sidecar = json.loads((bundle / 'sidecar.jsonl').read_text(encoding='utf-8'))
+            self.assertEqual(ledger['certified_fields'], ['a'])
+            self.assertEqual(sidecar['fields'], {'b': '40.7'})
+            self.assertEqual(replay_migration(bundle),
+                             [observe(checked, {'a': '41.7', 'b': '40.7', 'name': 'Ada'})])
+            ledger['certified_fields'] = []
+            (bundle / 'ledger.jsonl').write_text(json.dumps(ledger) + '\n', encoding='utf-8')
+            with self.assertRaisesRegex(ValueError, "Guard certificate or retained 'a'"):
+                replay_migration(bundle)
+
+    def test_sparse_drop_and_passing_guard(self):
+        checked, plan = scenario(
+            'keep where score > 40; select name;',
+            'convert score to score; drop name;',
+            old='score: decimal; name: text;', new='score: int;')
+        with TemporaryDirectory(dir=ROOT / 'evaluation') as directory:
+            root = Path(directory)
+            source = root / 'pipeline.vfl'
+            source.write_text('source path supplied to run_migration', encoding='utf-8')
+            data = root / 'input.csv'
+            data.write_text('score,name\n41.7,Ada\n', encoding='utf-8')
+            bundle = root / 'bundle'
+            result = run_migration(checked, plan, source, bundle, input_path=data)
+            self.assertEqual((result.recovered, result.rejected, result.retained_cells,
+                              result.observation_mismatches), (1, 0, 1, 0))
+            self.assertEqual(len(replay_migration(bundle)), 1)
+
     def test_compiled_program_runs_new_schema_without_legacy_adapter(self):
         checked, plan = scenario('keep where score > 40; select name;',
                                  'convert score to score;')

@@ -1,0 +1,13 @@
+schema Old {
+    date: text;
+    state: text;
+    beds_icu: int;
+    vent_covid: int;
+    vent_sari: int;
+}
+
+pipeline ICUCapacity from "moh_icu_2021_before.csv" as Old {
+    keep where vent_covid > 0;
+    select date, state, beds_icu;
+    emit "moh_icu_capacity.csv";
+}

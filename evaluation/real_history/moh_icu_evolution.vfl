@@ -1,0 +1,19 @@
+schema Old {
+    date: text;
+    state: text;
+    beds_icu: int;
+    vent_covid: int;
+    vent_sari: int;
+}
+
+schema New {
+    date: text;
+    state: text;
+    bed_icu: int;
+    vent_covid: int;
+}
+
+evolve Old to New {
+    rename beds_icu to bed_icu;
+    drop vent_sari;
+}
