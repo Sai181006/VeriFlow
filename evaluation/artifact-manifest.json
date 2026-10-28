@@ -1,5 +1,5 @@
 {
-  "git_base_revision": "66b86d73d4e0eebe52d376e4ba625dfcc81a5739",
+  "git_base_revision": "c8787014bb7248e623c95e78bc1045e25b7c6c8e",
   "python": "3.12.14",
   "file_sha256": {
     "README.md": "ac537c96d68e9c9dd44d491db1b2e96c4d565126c0fc303fc1e9b424966b2428",
@@ -100,7 +100,7 @@
     "docs/language.md": "c1c39ce6bf6b34be7e6549ee4ea91098fd8f7b5b4bb3ba9acd7b1dd19297f8c3",
     "docs/migration-method.md": "e223b0a9e033e5e76990c4fea626d3dd33ba1fd5ec64dbc4dcd2f013fd26a26f",
     "docs/paper-draft.md": "4bc6fb1f397d853334a7e990c99c84c9cf23747ba2fbb79c51de488f9407eb2d",
-    "docs/paper-manuscript-2026-10-28.md": "209417ab50407cb166afea738258c1d177006ce56dc6f6cc295d3daf9bf3bfd7",
+    "docs/paper-manuscript-2026-10-28.md": "fc20a3252583612ed4203e946080d0ed01ee7353e93b86c711f846f0db5d44b0",
     "docs/paper-research-context.md": "3149ac8f17373367c8c925bdc5410c40cc78f3b29f850f38f571674bb91e840d",
     "docs/paper-research-tasks.md": "3ea565b8e772f726649a1c4ba82334440f266c80c75e1389b7c638469ef7cad4",
     "docs/phase-one.md": "4cc14724a0464f29f9a2e0557c89412c06b0e6e4bd593972affc04343493359e",
@@ -115,6 +115,6 @@
     "docs/stage-two-audit.md": "d22799d14ad226ddaf261cfd4c9c6db002130c0bb5d268de83327be0c8a4ecc2",
     "docs/supervisor-review-note.md": "2f91b9383e89f34d410f157eae3c3edb5c07ce49931fe8b9d6cea692df6cc63a",
     "docs/venue-scout-2026-10-08.md": "5bf747a0b01cf6caa60a389f3baa884ae88a4df354b24f25c05469e6c6e24013",
-    "docs/paper-manuscript-2026-10-28.pdf": "2e489e69e4937d3c6d886d84aa249a4ed98771ec8655ab06fcbd8e6ce80eabe8"
+    "docs/paper-manuscript-2026-10-28.pdf": "0b2689c76fc9748aebc575cfbdf764ecd1d5ef91dc68ce3234fdc9c1b98fddd4"
   }
 }
