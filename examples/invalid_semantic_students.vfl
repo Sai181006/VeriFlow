@@ -1,0 +1,9 @@
+schema Student {
+    name: text;
+    marks: int;
+}
+
+pipeline InvalidStudents from "students.csv" as Student {
+    select name, mark;
+    emit "invalid_students.csv";
+}

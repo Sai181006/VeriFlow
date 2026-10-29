@@ -1,10 +1,21 @@
 {
-  "git_base_revision": "c8787014bb7248e623c95e78bc1045e25b7c6c8e",
+  "git_base_revision": "ec1b039aba7d49f94ed09825486c99ff86be6223",
   "python": "3.12.14",
   "file_sha256": {
-    "README.md": "ac537c96d68e9c9dd44d491db1b2e96c4d565126c0fc303fc1e9b424966b2428",
+    "README.md": "4637c6fcef5c523f5bf8a1c9aabc9d2fd9cee885e560fbd05f5b7ab0b39abf6b",
     "pyproject.toml": "449b614d8c1d896378f57e55a86aa410b4a06f7cda714ff8310c9c224c00b21d",
     "evaluation/README.md": "27f115a7d38ad04be0b473b93eb1def21c501bf97b4eafa7b3db31de3eb1b76a",
+    "demo.py": "4cade9422a48c6dbc77bb651164e332ac4e1dc8fceaf0a8752874eb6298df566",
+    "evolution_demo.py": "5a4bc4e90e091137f86a47bf95877831ff77a74b7e2a1d1c3f60c76a3dfbf13a",
+    "optimization_demo.py": "e3df076d73d8f80d2f10b96dfc832a508a2e1a524fceb79901d562b0cdf3f419",
+    "optimized_run.py": "13bfbeb84a836fd2f03c6841726167657848a06e468c58a3118c74b46be31c45",
+    "examples/chat_evolution.vfl": "e2df3aa2a4f008384332cd9ca7f2a23f511676710292d4b429fe1aacc164d845",
+    "examples/derived_students.vfl": "9de417ffa483dc5d401a805179d4c882347dc848a3bd42b6f4f8949bd59955f1",
+    "examples/invalid_semantic_students.vfl": "b353fbc263f44aba1be25db2426beddd49c34b9cbd629c8d77cacf8ee0c8e61e",
+    "examples/optimization_students.vfl": "991269e3a783f83d3a94ca16cfe58187087f15dfc72f4bb91e860f504f29b2f8",
+    "examples/project_students.vfl": "a5ab0596cdf655f6cf5631923420e3f86063e46d5eca08807cf9108ce72cfcaa",
+    "examples/selected_students.csv": "ce5c12cebe57f946c5400a4adaff8a921767f115414722bd0a1c18eb734383ac",
+    "examples/students.csv": "fb077de24cad3df131bcd7a4cff69eec036ad6ac61f49adf6873d4b11901ceea",
     "veriflow/__init__.py": "fa3a4932305eb2b85b7b0906a8c27c6e31b1971386d54f2cec12d4bc833230c8",
     "veriflow/__main__.py": "935a1c1166b0c1ea35a82256345000bf2c73ded718d77773bc27a71ecce28f7d",
     "veriflow/ast.py": "94818d6404c253eb62be7abd976aa27541cf129d02fecc7a463909c337013667",
@@ -44,7 +55,7 @@
     "tests/test_semantics.py": "56e2b89f9fa84df06373bab64af92706d1a3b48f6d1c1b7c5a056c8191b0c9e9",
     "tests/test_vm.py": "e7660d943f98bf1f51769ce602df8b43bfde4e61045a5ae311dc94be7d7be624",
     "evaluation/csv_parity.py": "aa0b3ea94298cdeb3f0b8276f30ca66157cd62cc9ccdf4ac17848a644a677873",
-    "evaluation/freeze_manifest.py": "76ebcfc0e01ddcd4db198f9bc1c8c0ee1e991b1b321ae03f9436e0a3ead885eb",
+    "evaluation/freeze_manifest.py": "b0f21c9ca3179359e09594d199926c9a28082c3a0552f4855d7ff92da6080e98",
     "evaluation/migration_study.py": "d22d281aca5983373eac13c1c2b4a4e17c375c8d915bf6b8cac184a9a04457d6",
     "evaluation/negative_controls.py": "392971c1a0bcb1d29882a0af43a412e95e1c33cb0ff074360d696c2fc2ac9e8c",
     "evaluation/recovery_study.py": "a7389cf4dc87427c064272f5087043bc93d1f81b1a332a9d138428c964524f4f",
@@ -100,7 +111,7 @@
     "docs/language.md": "c1c39ce6bf6b34be7e6549ee4ea91098fd8f7b5b4bb3ba9acd7b1dd19297f8c3",
     "docs/migration-method.md": "e223b0a9e033e5e76990c4fea626d3dd33ba1fd5ec64dbc4dcd2f013fd26a26f",
     "docs/paper-draft.md": "4bc6fb1f397d853334a7e990c99c84c9cf23747ba2fbb79c51de488f9407eb2d",
-    "docs/paper-manuscript-2026-10-28.md": "fc20a3252583612ed4203e946080d0ed01ee7353e93b86c711f846f0db5d44b0",
+    "docs/paper-manuscript-2026-10-28.md": "1794fd1a23c06b1ec6c05578223886f5f2d47416ac6a7ae010208cf6a7b25321",
     "docs/paper-research-context.md": "3149ac8f17373367c8c925bdc5410c40cc78f3b29f850f38f571674bb91e840d",
     "docs/paper-research-tasks.md": "3ea565b8e772f726649a1c4ba82334440f266c80c75e1389b7c638469ef7cad4",
     "docs/phase-one.md": "4cc14724a0464f29f9a2e0557c89412c06b0e6e4bd593972affc04343493359e",
@@ -113,8 +124,9 @@
     "docs/stage-one-audit.md": "4818c6cce8498c7378de9c388c5834951100d9523e4abff8229afdf98b898d86",
     "docs/stage-three-audit.md": "e97e10591868d7dc14167eddb3cdee1f15dc7f9c7822554267b627209099857a",
     "docs/stage-two-audit.md": "d22799d14ad226ddaf261cfd4c9c6db002130c0bb5d268de83327be0c8a4ecc2",
+    "docs/supervisor-demo-2026-10-30.md": "71ac0b1c3ce7bcc2c947e85b996d9b8e6c06d17c5f77040c68909a10363825d7",
     "docs/supervisor-review-note.md": "2f91b9383e89f34d410f157eae3c3edb5c07ce49931fe8b9d6cea692df6cc63a",
     "docs/venue-scout-2026-10-08.md": "5bf747a0b01cf6caa60a389f3baa884ae88a4df354b24f25c05469e6c6e24013",
-    "docs/paper-manuscript-2026-10-28.pdf": "0b2689c76fc9748aebc575cfbdf764ecd1d5ef91dc68ce3234fdc9c1b98fddd4"
+    "docs/paper-manuscript-2026-10-28.pdf": "78679255f92678392fa4b12c9a3653da49b27c56f6714ff464d4ee6c11f4c2b7"
   }
 }

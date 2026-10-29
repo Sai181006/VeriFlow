@@ -109,6 +109,8 @@ The pilot's 17,928 case-rows reuse 5,926 distinct rows; they are not 17,928 inde
 
 [Auge and Heuer (2022)](https://arxiv.org/abs/2211.13810) use provenance to enhance inversion of schema evolution, so storing auxiliary source information is established prior art. VeriFlow's contribution is the binding of such retained values to a pipeline-specific preservation decision and replay bundle. [Vassiliadis et al. (2023)](https://openproceedings.org/2023/conf/edbt/paper-160.pdf) study schema and source histories across 195 projects, motivating explicit real-history evaluation. [EvoSchema (2025)](https://www.vldb.org/pvldb/vol18/p3655-zhang.pdf) benchmarks schema-evolution robustness for text-to-SQL systems; its task and metrics are different, but its diversity of schema perturbations underscores the narrowness of our one-change real study. We do not claim conditional equivalence, selected-information preservation, or schema rewriting as concepts invented here.
 
+[Ortín, Hoyos, and García-Molina (2026 preprint)](https://arxiv.org/abs/2604.22415) generate trace-driven relational-to-document migrations through a unified schema model and evaluate query-result equivalence, including joins and aggregations, at a much larger scale. Thus, preservation of query behavior after migration is not a unique VeriFlow claim. Our distinct scoped question is whether an explicitly lossy mapping preserves a particular typed row pipeline, and which old cells or migration-time guard certificates suffice when it does not. We have no direct implementation baseline against their system, and our one-event evaluation is materially narrower.
+
 ## 7. Threats to validity and limits
 
 The theorem concerns finite, well-typed legacy rows with defined mappings and migration-time access to their original values. The compiled input plan fills legacy VM registers; it is not a standalone textual rewritten pipeline. New-only future rows have no old-row guard certificate, so the result does not certify their behavior. The language excludes joins, aggregation, arbitrary UDFs, and multi-step migrations. Guard conjunction can conservatively retain rows whose full compound expression would actually remain unchanged. Sparse retention is sufficient, not globally minimal.
@@ -138,6 +140,7 @@ VeriFlow makes a limited but executable claim: a lossy source schema change need
 4. Vassiliadis, P., Shehaj, F., Kalampokis, G., and Zarras, A. V. (2023). [Joint Source and Schema Evolution: Insights from a Study of 195 FOSS Projects](https://openproceedings.org/2023/conf/edbt/paper-160.pdf). EDBT 2023.
 5. Zhang, T., et al. (2025). [EvoSchema: Towards Text-to-SQL Robustness Against Schema Evolution](https://www.vldb.org/pvldb/vol18/p3655-zhang.pdf). *PVLDB*, 18(10), 3655–3668.
 6. Ministry of Health Malaysia. (2021). [Official COVID-19 public dataset, ICU schema-change commit](https://github.com/MoH-Malaysia/covid19-public/commit/4e80229047d796f14c7aac82910a3377277b699f).
+7. Ortín, M. J., Hoyos, J. R., and García-Molina, J. J. (2026). [A Model-Driven Approach to Database Migration with a Unified Data Model](https://arxiv.org/abs/2604.22415). arXiv:2604.22415v2, preprint.
 
 ## Appendix A Artifact details
 

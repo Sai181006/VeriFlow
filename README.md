@@ -62,6 +62,10 @@ For a presentation, double-click `demo.cmd` on Windows or run one command:
 python demo.py
 ```
 
+The [supervisor walkthrough](docs/supervisor-demo-2026-10-30.md) maps the
+three compiler phases to source files and gives verified PowerShell commands
+for bytecode, optimization, validation errors, and schema-migration replay.
+
 The default `all` mode first shows two incorrect inputs: a text value inside the
 integer `marks` column and a mark outside the allowed range. VeriFlow explains
 each failure and proves that no partial output was published. It then runs the
