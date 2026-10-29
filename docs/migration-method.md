@@ -54,9 +54,15 @@ restored from the sidecar. Replay refuses a conditional binding that has
 neither its individual certificate nor its retained old cell. This permits
 mixed guard outcomes without retaining every observed source field.
 
-The `sparse` strategy retains a required dropped field on every affected row.
-For conditional conversion, split, or merge mappings, it retains the observed
-old source cell only on rows that fail its guard. The `full-row` strategy saves
+The `sparse` strategy retains a required dropped field when the row reaches a
+projection that observes it. For conditional conversion, split, or merge
+mappings, it retains the observed old source cell on guard failure when that
+cell is needed by an operation or a reached projection. It conservatively
+binds every old field loaded by any VM operation, including operations after
+an early exit; only fields used solely by `select` are deferred. A filtered,
+rejected, or expression-error row can therefore have a recovered ledger entry
+with an empty sidecar. This retains the meaning of `admitted` as a row whose
+static proof guards passed. The `full-row` strategy saves
 every declared old field for every well-typed row. The `guard-only` strategy
 rejects every row that fails a guard or requires an observed dropped field.
 Both sparse and full-row preserve the admitted/recovered rows in the evaluated

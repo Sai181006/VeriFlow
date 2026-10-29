@@ -130,9 +130,10 @@ Get-Content "$recovered/sidecar.jsonl" -TotalCount 1
 ```
 
 The preserved pipeline ignores the removed field: **7,315 admitted, zero
-retained cells**. The recovered pipeline selects it: **7,315 recovered, one
-old cell retained per row, zero mismatches**. Replay yields 4,025 emitted and
-3,290 filtered observations in each case. `migrated.csv` has the new
+retained cells**. The recovered pipeline selects it: **7,315 recovered, 4,025
+old cells retained, zero mismatches**. Its 3,290 filtered rows have empty
+sidecars because they stop before selecting `vent_sari`. Replay yields 4,025
+emitted and 3,290 filtered observations in each case. `migrated.csv` has the new
 `bed_icu` column and no `vent_sari`; `sidecar.jsonl` contains the removed
 value linked by durable row ID. The `impact-check` status for the second
 pipeline is `UNKNOWN` because a new-row-only plan cannot reconstruct the
@@ -140,7 +141,8 @@ dropped field; migration makes execution possible by retaining it.
 
 For the full study, open [`migration-results.json`](../evaluation/migration-results.json)
 or run `& $py -m evaluation.migration_study`. The full test command is
-`& $py -m unittest discover -s tests -q` (103 tests passed on 30 October 2026).
+`& $py -m unittest discover -s tests -q` (107 tests passed after the
+terminal-aware extension).
 The included [manuscript](paper-manuscript-2026-10-28.md) gives the method,
 comparisons, and limits.
 

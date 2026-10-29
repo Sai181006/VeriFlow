@@ -30,6 +30,90 @@ def scenario(body: str, evolution_rules: str, *, old: str = "score: decimal; nam
 
 
 class MigrationTests(unittest.TestCase):
+    def test_terminal_projection_drop_retains_only_emitted_cells(self):
+        checked, plan = scenario('keep where score > 0; select name;', 'drop name;',
+                                 old='score: int; name: text;', new='score: int;')
+        compiled = compile_evolved_pipeline(checked, plan, analyze_impact(checked, plan))
+        self.assertEqual(execute_evolved(compiled, {'score': -1}), Observation('filtered'))
+        with self.assertRaisesRegex(ValueError, 'Retained old field'):
+            execute_evolved(compiled, {'score': 1})
+        with TemporaryDirectory(dir=ROOT / 'evaluation') as directory:
+            root = Path(directory)
+            source = root / 'pipeline.vfl'
+            source.write_text('source path supplied to run_migration', encoding='utf-8')
+            data = root / 'input.csv'
+            data.write_text('score,name\n-1,Ada\n1,Bob\n', encoding='utf-8')
+            bundle = root / 'bundle'
+            result = run_migration(checked, plan, source, bundle, input_path=data)
+            self.assertEqual((result.admitted, result.recovered, result.rejected,
+                              result.retained_cells, result.observation_mismatches),
+                             (0, 2, 0, 1, 0))
+            sidecars = [json.loads(line) for line in (bundle / 'sidecar.jsonl').read_text(
+                encoding='utf-8').splitlines()]
+            self.assertEqual([entry['fields'] for entry in sidecars], [{}, {'name': 'Bob'}])
+            self.assertEqual(replay_migration(bundle),
+                             [Observation('filtered'), Observation('emitted', values=('Bob',))])
+
+    def test_projection_drop_after_rejection_or_expression_error(self):
+        cases = (
+            ('require score > 0 else "positive"; select name;', 'rejected', 'positive'),
+            ('let ratio = 1 / score; select name;', 'expression-error', 'ZeroDivisionError'),
+        )
+        for body, outcome, message in cases:
+            with self.subTest(outcome=outcome):
+                checked, plan = scenario(body, 'drop name;',
+                                         old='score: int; name: text;', new='score: int;')
+                with TemporaryDirectory(dir=ROOT / 'evaluation') as directory:
+                    root = Path(directory)
+                    source = root / 'pipeline.vfl'
+                    source.write_text('source path supplied to run_migration', encoding='utf-8')
+                    data = root / 'input.csv'
+                    data.write_text('score,name\n0,Ada\n1,Bob\n', encoding='utf-8')
+                    bundle = root / 'bundle'
+                    result = run_migration(checked, plan, source, bundle, input_path=data)
+                    self.assertEqual((result.retained_cells, result.observation_mismatches),
+                                     (1, 0))
+                    self.assertEqual(replay_migration(bundle)[0], Observation(outcome, message))
+                    sidecars = [json.loads(line) for line in (bundle / 'sidecar.jsonl').read_text(
+                        encoding='utf-8').splitlines()]
+                    self.assertEqual([entry['fields'] for entry in sidecars],
+                                     [{}, {'name': 'Bob'}])
+
+    def test_operation_loaded_field_remains_retained_on_filtered_row(self):
+        checked, plan = scenario('keep where name == "Ada"; select name;', 'drop name;',
+                                 old='score: int; name: text;', new='score: int;')
+        with TemporaryDirectory(dir=ROOT / 'evaluation') as directory:
+            root = Path(directory)
+            source = root / 'pipeline.vfl'
+            source.write_text('source path supplied to run_migration', encoding='utf-8')
+            data = root / 'input.csv'
+            data.write_text('score,name\n0,Bob\n1,Ada\n', encoding='utf-8')
+            bundle = root / 'bundle'
+            result = run_migration(checked, plan, source, bundle, input_path=data)
+            self.assertEqual((result.retained_cells, result.observation_mismatches), (2, 0))
+            self.assertEqual([item.outcome for item in replay_migration(bundle)],
+                             ['filtered', 'emitted'])
+
+    def test_terminal_projection_guard_needs_no_old_cell(self):
+        checked, plan = scenario('keep where name == "Ada"; select score;',
+                                 'convert score to score;')
+        with TemporaryDirectory(dir=ROOT / 'evaluation') as directory:
+            root = Path(directory)
+            source = root / 'pipeline.vfl'
+            source.write_text('source path supplied to run_migration', encoding='utf-8')
+            data = root / 'input.csv'
+            data.write_text('score,name\n40.7,Bob\n41.7,Ada\n', encoding='utf-8')
+            bundle = root / 'bundle'
+            result = run_migration(checked, plan, source, bundle, input_path=data)
+            self.assertEqual((result.recovered, result.retained_cells,
+                              result.observation_mismatches), (2, 1, 0))
+            sidecars = [json.loads(line) for line in (bundle / 'sidecar.jsonl').read_text(
+                encoding='utf-8').splitlines()]
+            self.assertEqual([entry['fields'] for entry in sidecars],
+                             [{}, {'score': '41.7'}])
+            self.assertEqual([item.outcome for item in replay_migration(bundle)],
+                             ['filtered', 'emitted'])
+
     def test_sparse_mixed_guards_certify_passed_binding(self):
         checked, plan = scenario(
             'keep where a > 40; keep where b > 40; select name;',

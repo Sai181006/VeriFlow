@@ -47,7 +47,9 @@ python -m evaluation.migration_study
 pilot cases under three strategies, with three end-to-end repetitions each:
 
 - `sparse` admits guard-passing rows and retains only needed old cells on
-  guard failures or observed drops.
+  guard failures or observed drops. If a row stops before projection, it omits
+  old cells used only by `select`; the recovered ledger entry can then have an
+  empty sidecar.
 - `guard-only` rejects rows that fail a guard or need an observed dropped field.
 - `full-row` retains every declared old source cell for every well-typed row.
 
@@ -71,7 +73,8 @@ admission coverage. End-to-end timings include analysis, migration, writing,
 and disk replay, while the strategies process different numbers of rows.
 They are not isolated overhead measurements. Total bundle bytes include the
 compulsory migrated rows, ledger, compiled plan, replay, rejects, and summary;
-sidecar bytes count only retained-cell entries. See the
+sidecar bytes include JSONL row metadata even for empty recovered sidecars.
+See the
 [migration method](../docs/migration-method.md).
 Recovered rows may carry per-field guard certificates for other observed fields
 whose guards passed before migration; the [mixed-guard regression](../tests/test_migration.py)

@@ -46,7 +46,7 @@ Two predeclared pipelines study the same actual schema event:
 | Pipeline | Old observation | Expected result |
 | --- | --- | --- |
 | [`moh_icu_preserved.vfl`](moh_icu_preserved.vfl) | Filters on `vent_covid` and selects capacity, date, and state; it never reads `vent_sari`. | The record is lossy, but the pipeline is preserved with no sidecar. |
-| [`moh_icu_recovered.vfl`](moh_icu_recovered.vfl) | Filters on `vent_covid` and selects the dropped `vent_sari` value with date and state. | Sparse mode retains one old cell per row and replays it; guard-only rejects those rows. |
+| [`moh_icu_recovered.vfl`](moh_icu_recovered.vfl) | Filters on `vent_covid` and selects the dropped `vent_sari` value with date and state. | Sparse mode retains `vent_sari` on 4,025 emitted rows and no old cell on 3,290 filtered rows; guard-only rejects all rows under the static proof. |
 
 The [evolution rule](moh_icu_evolution.vfl) is explicit. The three-strategy
 [`migration_study.py`](../migration_study.py) compares each emitted new row with

@@ -43,6 +43,19 @@ class EvolvedProgram:
     impact_status: str
 
 
+def operation_source_fields(program: EvolvedProgram) -> frozenset[str]:
+    """Old fields used by VM operations, including operations after early exits.
+
+    This conservative set excludes an old field used only by projection.
+    """
+    old_fields = dict(program.old_fields)
+    return frozenset(str(instruction.operand)
+                     for operation in program.bytecode.operations
+                     for instruction in operation.instructions
+                     if instruction.opcode == "LOAD_FIELD"
+                     and instruction.operand in old_fields)
+
+
 def compile_evolved_pipeline(checked: CheckedProgram, evolution: EvolutionPlan,
                              impact: ImpactReport) -> EvolvedProgram:
     """Generate explicit new-column bindings for the existing row-wise VM."""
@@ -143,7 +156,9 @@ def execute_evolved(program: EvolvedProgram, new_record: dict[str, Any],
     for name, kind in program.new_fields:
         _typed(new_record[name], kind)
     values: dict[str, object] = {}
-    for binding in program.bindings:
+    bindings = {binding.old_field: binding for binding in program.bindings}
+
+    def bind(binding: FieldBinding) -> None:
         if binding.old_field in retained:
             value = retained[binding.old_field]
         else:
@@ -163,6 +178,13 @@ def execute_evolved(program: EvolvedProgram, new_record: dict[str, Any],
             else:
                 raise ValueError(f"Unsupported binding {binding.operation!r}")
         values[binding.old_field] = _typed(value, binding.old_type)
+
+    # Operations may reject or filter the row before projection is observed.
+    # Keep their inputs conservative; defer projection-only bindings until emit.
+    operation_fields = operation_source_fields(program)
+    for binding in program.bindings:
+        if binding.old_field in operation_fields:
+            bind(binding)
     for operation in program.bytecode.operations:
         try:
             result = execute_expression(operation.instructions, values)
@@ -175,4 +197,7 @@ def execute_evolved(program: EvolvedProgram, new_record: dict[str, Any],
             return Observation("rejected", operation.message)
         elif operation.kind == "keep" and not bool(result):
             return Observation("filtered")
+    for name in program.bytecode.selected:
+        if name in bindings and name not in values:
+            bind(bindings[name])
     return Observation("emitted", values=tuple(values[name] for name in program.bytecode.selected))

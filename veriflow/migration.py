@@ -14,7 +14,7 @@ from uuid import uuid4
 
 from .evolution import EvolutionPlan, migrate_forward
 from .evolved import (EvolvedProgram, compile_evolved_pipeline, execute_evolved,
-                      load_evolved_pipeline)
+                      load_evolved_pipeline, operation_source_fields)
 from .impact import Observation, analyze_impact, observe
 from .recovery import plan_recovery
 from .runtime import _valid
@@ -156,6 +156,8 @@ def run_migration(checked: CheckedProgram, evolution: EvolutionPlan,
         raise ValueError("_veriflow_id is reserved for migration row identity")
     impact = analyze_impact(checked, evolution)
     compiled = compile_evolved_pipeline(checked, evolution, impact)
+    projection_only = {binding.old_field for binding in compiled.bindings
+                       if binding.old_field not in operation_source_fields(compiled)}
     recovery = plan_recovery(checked, evolution) if strategy == "sparse" else None
     source_path = source_path.resolve()
     input_path = ((source_path.parent / checked.program.pipeline.input_path.value)
@@ -216,6 +218,9 @@ def run_migration(checked: CheckedProgram, evolution: EvolutionPlan,
                                             f"field conversion failed: {error}"])
                     rejected += 1
                     continue
+                old_observation = observe(checked, old)
+                inactive_projection = (projection_only if old_observation.outcome != "emitted"
+                                       and strategy == "sparse" else set())
                 guard_pass = all(guard.accepts(old) for guard in impact.guards)
                 observed_drop = any(binding.recovery_required for binding in compiled.bindings)
                 if strategy == "guard-only" and (not guard_pass or observed_drop
@@ -231,11 +236,17 @@ def run_migration(checked: CheckedProgram, evolution: EvolutionPlan,
                     assert recovery is not None
                     for rule in recovery.rules:
                         if not rule.guards or not all(guard.accepts(old) for guard in rule.guards):
-                            retained.update({name: old[name] for name in rule.fields})
-                mode = "recovered" if retained or strategy == "full-row" else "admitted"
+                            retained.update({name: old[name] for name in rule.fields
+                                             if name not in inactive_projection})
+                # Keep the old recovery assertion even when a terminal row
+                # needs no old cells. It records that a static proof was absent.
+                mode = ("recovered" if retained or strategy == "full-row" or
+                        strategy == "sparse" and (not guard_pass or observed_drop)
+                        else "admitted")
                 certified = frozenset(
                     binding.old_field for binding in compiled.bindings
                     if mode == "recovered" and binding.guards
+                    and binding.old_field not in inactive_projection
                     and binding.old_field not in retained
                     and all(guard.accepts(old) for guard in binding.guards))
                 try:
@@ -266,7 +277,7 @@ def run_migration(checked: CheckedProgram, evolution: EvolutionPlan,
                     retained_cells += len(retained)
                 else:
                     admitted += 1
-                old_observations.append(observe(checked, old))
+                old_observations.append(old_observation)
         replayed = replay_migration(temporary)
         mismatches = sum(left != right for left, right in zip(old_observations, replayed, strict=True))
         if mismatches:
