@@ -1,8 +1,8 @@
 {
-  "git_base_revision": "0e90ad878f7be485147793da63e9a8dd3b5bc43e",
+  "git_base_revision": "bad325e67609509c47690b91a37f1805ed269b32",
   "python": "3.12.14",
   "file_sha256": {
-    "README.md": "4637c6fcef5c523f5bf8a1c9aabc9d2fd9cee885e560fbd05f5b7ab0b39abf6b",
+    "README.md": "bf2783ac00225f5cd80dabb38730ff4a82e596ae5b80c2c8a9629b630ed4527e",
     "pyproject.toml": "449b614d8c1d896378f57e55a86aa410b4a06f7cda714ff8310c9c224c00b21d",
     "evaluation/README.md": "03e8666d355b967688f3b425dcca13c39e101ffe0717d541b32b0525df9dd22f",
     "demo.py": "4cade9422a48c6dbc77bb651164e332ac4e1dc8fceaf0a8752874eb6298df566",
@@ -119,6 +119,7 @@
     "docs/phase-three.md": "08f1ffd95e2a8c3c515f5e8f5c0e4f5e6f8e37010859b4e818891766ef44ed38",
     "docs/phase-two.md": "64bc73ef4fda717e29af168729e437cd8dcbd87b409ac6fff56caa78561904e2",
     "docs/presentation-brief.md": "db38e821b30cec4e044b5854b58bf9e5cb2724908af428392c30024b8da46c8c",
+    "docs/presentation-speaker-notes-2026-10-30.md": "97260818c9ec543f6ddd76b91ab7a8f3fb6db36a0a1f0633eaf7b29440ca4de5",
     "docs/prototype.md": "694396d08799928813290e3b80880dc3572b833890b06e8d74a84bfbfaebadb0",
     "docs/recovery-method.md": "d6c9f765840b2e0783ff4152f3ea8af4c49fba04f9375dd877874cc3cf9a69c3",
     "docs/schema-evolution.md": "b734d188adb000e38a36f2a54d29a3aa81af770c5e8ecbb8b738e1ccb59107a4",

@@ -185,3 +185,10 @@ The reusable [eight-slide research presentation brief](docs/presentation-brief.m
 summarizes the problem, related work, precise contribution, evidence, and limits.
 The [editable PowerPoint](presentations/output/veriflow-research-blue-bell-v2.pptx)
 is documented in [presentations/README.md](presentations/README.md).
+
+For the current supervisor review, use the [16-slide presentation](docs/VeriFlow-Research-Presentation-2026-10-30.pptx),
+[slide-by-slide speaking script](docs/presentation-speaker-notes-2026-10-30.md),
+[revised detailed Word report](docs/VeriFlow-Detailed-Research-Report-2026-10-30.docx),
+and [live demonstration guide](docs/supervisor-demo-2026-10-30.md).
+The [latest internal council decision](docs/council-terminal-retention-2026-10-30.md)
+records the terminal-aware retention extension and its limits.
